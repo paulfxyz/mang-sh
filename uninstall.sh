@@ -1,79 +1,116 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  uninstall.sh — Remove yo-rust from your system
+#  uninstall.sh -- Remove yo-rust from your system
 #  https://github.com/paulfxyz/yo-rust
 #
-#  Usage:
+#  Usage (pipe-safe -- reads from /dev/tty, not stdin):
 #    curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.sh | bash
 #
-#  What it removes:
-#    • The `yo` binary (wherever it was installed)
-#    • The config directory (~/.config/yo-rust/)  ← asks before deleting
-#    • The yo-rust alias block from ~/.zshrc / ~/.bashrc
+#  Or run directly after download:
+#    bash uninstall.sh
 #
-#  What it KEEPS (unless you say otherwise):
-#    • Rust itself (rustup) — yo-rust didn't install it exclusively
-#    • Any other binaries in your PATH
+#  What this script removes:
+#    - The `yo` binary (searched in PATH and common install locations)
+#    - The config directory -- ASKS BEFORE DELETING (keeps your API key by default)
+#    - The yo-rust alias block from ~/.zshrc, ~/.bashrc, ~/.bash_profile
 #
-#  Works with:  v1.0.0+
+#  What it leaves alone:
+#    - Rust / rustup (you may use it for other projects)
+#    - Any other binaries or shell configuration
+#
+#  Works with: v1.0.0 and later
 # =============================================================================
 
 set -euo pipefail
 
 SUDO=""
 
-# ── Colours ───────────────────────────────────────────────────────────────────
+# -- Colours (pure ANSI escape codes, no Unicode in variable names) -----------
 RED='\033[0;31m'
-GREEN='\033[0;32m'
-CYAN='\033[0;36m'
-YELLOW='\033[1;33m'
-BOLD='\033[1m'
+GRN='\033[0;32m'
+CYN='\033[0;36m'
+YLW='\033[1;33m'
+BLD='\033[1m'
 DIM='\033[2m'
-RESET='\033[0m'
+RST='\033[0m'
 
-ok()    { echo -e "  ${GREEN}✔${RESET}  $1"; }
-warn()  { echo -e "  ${YELLOW}⚠${RESET}  $1"; }
-info()  { echo -e "  ${DIM}$1${RESET}"; }
-skip()  { echo -e "  ${DIM}–  $1${RESET}"; }
-error() { echo -e "  ${RED}✗${RESET}  $1"; exit 1; }
+ok()    { printf "  ${GRN}[ok]${RST}  %s\n"   "$1"; }
+warn()  { printf "  ${YLW}[!!]${RST}  %s\n"   "$1"; }
+info()  { printf "  ${DIM}      %s${RST}\n"    "$1"; }
+skip()  { printf "  ${DIM}[--]  %s${RST}\n"   "$1"; }
+die()   { printf "  ${RED}[!!]${RST}  %s\n"   "$1"; exit 1; }
 
-ask() {
-    # ask <question> — returns 0 (yes) or 1 (no)
-    echo -en "  ${YELLOW}?${RESET}  $1 ${DIM}[y/N]${RESET} "
-    read -r reply
+# ask <question>
+# Reads from /dev/tty so this works whether the script is piped or run directly.
+# Prints [Y/N] (uppercase Y = default yes, uppercase N = default no).
+# Returns 0 for yes, 1 for no.
+ask_yes() {
+    local reply
+    # /dev/tty is the actual terminal even when stdin is a pipe
+    printf "  ${YLW}[??]${RST}  %s ${DIM}[Y/N]${RST} " "$1"
+    read -r reply </dev/tty
     [[ "$reply" =~ ^[Yy]$ ]]
 }
 
-# ── Banner ────────────────────────────────────────────────────────────────────
-echo ""
-echo -e "${CYAN}  ╔══════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}  ║         Uninstalling  Yo, Rust!          ║${RESET}"
-echo -e "${CYAN}  ╚══════════════════════════════════════════╝${RESET}"
-echo ""
-echo -e "  ${DIM}This will remove yo-rust from your system.${RESET}"
-echo ""
+ask_no() {
+    # Like ask_yes but default is No (user must explicitly type Y)
+    local reply
+    printf "  ${YLW}[??]${RST}  %s ${DIM}[y/N]${RST} " "$1"
+    read -r reply </dev/tty
+    [[ "$reply" =~ ^[Yy]$ ]]
+}
 
-# ── Confirm intent ────────────────────────────────────────────────────────────
-if ! ask "Are you sure you want to uninstall yo-rust?"; then
-    echo ""
-    echo -e "  ${DIM}Cancelled. Nothing was removed.${RESET}"
-    echo ""
+# -- Banner -------------------------------------------------------------------
+printf "\n"
+printf "${CYN}  +==========================================+${RST}\n"
+printf "${CYN}  |       Uninstalling  Yo, Rust!           |${RST}\n"
+printf "${CYN}  +==========================================+${RST}\n"
+printf "\n"
+printf "  ${DIM}This will remove yo-rust from your system.${RST}\n"
+printf "  ${DIM}Your OpenRouter API key will be kept unless you say otherwise.${RST}\n"
+printf "\n"
+
+# -- Confirm intent -----------------------------------------------------------
+if ! ask_yes "Are you sure you want to uninstall yo-rust?"; then
+    printf "\n"
+    printf "  ${DIM}Cancelled. Nothing was changed.${RST}\n"
+    printf "\n"
     exit 0
 fi
-echo ""
+printf "\n"
 
-# ── 1. Find and remove the binary ─────────────────────────────────────────────
-YO_BIN="$(command -v yo 2>/dev/null || true)"
+# =============================================================================
+#  Step 1 -- Find and remove the binary
+# =============================================================================
+YO_BIN=""
+
+# First: check PATH
+if command -v yo &>/dev/null; then
+    YO_BIN="$(command -v yo)"
+else
+    # PATH miss -- check common install locations manually
+    for candidate in \
+        /usr/local/bin/yo \
+        /usr/bin/yo \
+        "$HOME/.local/bin/yo" \
+        "$HOME/bin/yo"; do
+        if [[ -f "$candidate" ]]; then
+            YO_BIN="$candidate"
+            break
+        fi
+    done
+fi
 
 if [[ -n "$YO_BIN" ]]; then
     INSTALL_DIR="$(dirname "$YO_BIN")"
 
-    # Check if we need elevated permissions
+    # Determine whether we need sudo
     if [[ ! -w "$INSTALL_DIR" ]]; then
         if sudo -n true 2>/dev/null; then
             SUDO="sudo"
         else
             warn "Need elevated permissions to remove $YO_BIN"
+            warn "You may be prompted for your password."
             SUDO="sudo"
         fi
     fi
@@ -81,67 +118,65 @@ if [[ -n "$YO_BIN" ]]; then
     ${SUDO} rm -f "$YO_BIN"
     ok "Removed binary: $YO_BIN"
 else
-    # Binary might be in a non-PATH location — check common spots
-    for candidate in /usr/local/bin/yo "$HOME/.local/bin/yo" "$HOME/bin/yo"; do
-        if [[ -f "$candidate" ]]; then
-            if [[ ! -w "$(dirname "$candidate")" ]]; then
-                SUDO="sudo"
-            fi
-            ${SUDO} rm -f "$candidate"
-            ok "Removed binary: $candidate"
-            YO_BIN="$candidate"
-            break
+    skip "Binary not found in PATH or common locations -- may already be removed."
+fi
+
+# =============================================================================
+#  Step 2 -- Remove config directory (ask first)
+# =============================================================================
+
+# Resolve the correct config directory for this OS
+CONFIG_DIR=""
+case "$(uname -s)" in
+    Darwin)
+        # macOS: dirs crate uses Application Support
+        MACOS_CFG="$HOME/Library/Application Support/yo-rust"
+        XDG_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/yo-rust"
+        if   [[ -d "$MACOS_CFG" ]]; then CONFIG_DIR="$MACOS_CFG"
+        elif [[ -d "$XDG_CFG"   ]]; then CONFIG_DIR="$XDG_CFG"
         fi
-    done
+        ;;
+    Linux|*)
+        CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/yo-rust"
+        ;;
+esac
 
-    if [[ -z "$YO_BIN" ]]; then
-        skip "Binary not found in PATH or common locations — may have been removed already."
-    fi
-fi
-
-# ── 2. Remove config directory ────────────────────────────────────────────────
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/yo-rust"
-
-# macOS uses a different config dir
-if [[ "$(uname)" == "Darwin" ]]; then
-    MACOS_CONFIG="$HOME/Library/Application Support/yo-rust"
-    if [[ -d "$MACOS_CONFIG" ]]; then
-        CONFIG_DIR="$MACOS_CONFIG"
-    fi
-fi
-
-if [[ -d "$CONFIG_DIR" ]]; then
-    echo ""
-    warn "Config directory found: $CONFIG_DIR"
-    info "  This contains your API key and model preference."
-    echo ""
-    if ask "Delete config directory? (you will need to re-enter your API key if you reinstall)"; then
+printf "\n"
+if [[ -n "$CONFIG_DIR" && -d "$CONFIG_DIR" ]]; then
+    warn "Config found: $CONFIG_DIR"
+    info "Contains your OpenRouter API key and model preference."
+    info "If you keep it, reinstalling will pick up your settings automatically."
+    printf "\n"
+    if ask_no "Delete config? (you will need to re-enter your API key if you reinstall)"; then
         rm -rf "$CONFIG_DIR"
         ok "Removed config: $CONFIG_DIR"
     else
         skip "Config kept at: $CONFIG_DIR"
     fi
 else
-    skip "Config directory not found — nothing to remove."
+    skip "Config directory not found -- nothing to remove."
 fi
 
-# ── 3. Remove shell aliases ────────────────────────────────────────────────────
-echo ""
-SHELL_FILES=()
-[[ -f "$HOME/.zshrc"   ]] && SHELL_FILES+=("$HOME/.zshrc")
-[[ -f "$HOME/.bashrc"  ]] && SHELL_FILES+=("$HOME/.bashrc")
-[[ -f "$HOME/.bash_profile" ]] && SHELL_FILES+=("$HOME/.bash_profile")
+# =============================================================================
+#  Step 3 -- Remove shell aliases
+# =============================================================================
+printf "\n"
+
+RC_FILES=()
+for f in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.bash_profile"; do
+    [[ -f "$f" ]] && RC_FILES+=("$f")
+done
 
 ALIASES_REMOVED=0
-for RC_FILE in "${SHELL_FILES[@]}"; do
+for RC_FILE in "${RC_FILES[@]}"; do
     if grep -q "yo-rust aliases" "$RC_FILE" 2>/dev/null; then
-        # Use a temp file to safely edit — avoids partial writes
+        # Write to a temp file then move -- avoids corrupt rc file on crash
         TMP_RC="$(mktemp)"
-        # Remove the alias block: the comment line + the two alias lines + blank line
-        grep -v "yo-rust aliases\|alias hi='yo'\|alias hello='yo'" "$RC_FILE" > "$TMP_RC"
-        # Remove any resulting double-blank lines left by the deletion
-        # (optional cosmetic cleanup — perl one-liner for portability)
-        perl -i -0pe 's/\n{3,}/\n\n/g' "$TMP_RC" 2>/dev/null || true
+        grep -v \
+            -e "yo-rust aliases" \
+            -e "alias hi='yo'" \
+            -e "alias hello='yo'" \
+            "$RC_FILE" > "$TMP_RC"
         mv "$TMP_RC" "$RC_FILE"
         ok "Removed yo-rust aliases from $RC_FILE"
         ALIASES_REMOVED=1
@@ -152,15 +187,19 @@ if [[ $ALIASES_REMOVED -eq 0 ]]; then
     skip "No yo-rust aliases found in shell config files."
 fi
 
-# ── Done ──────────────────────────────────────────────────────────────────────
-echo ""
-echo -e "${CYAN}  ╔══════════════════════════════════════════╗${RESET}"
-echo -e "${CYAN}  ║           Uninstall complete!            ║${RESET}"
-echo -e "${CYAN}  ╚══════════════════════════════════════════╝${RESET}"
-echo ""
-echo -e "  ${DIM}yo-rust has been removed from your system.${RESET}"
-echo -e "  ${DIM}Rust itself was not removed — run ${RESET}${BOLD}rustup self uninstall${RESET}${DIM} if you want that too.${RESET}"
-echo ""
-echo -e "  ${DIM}To reinstall later:${RESET}"
-echo -e "  ${CYAN}curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash${RESET}"
-echo ""
+# =============================================================================
+#  Done
+# =============================================================================
+printf "\n"
+printf "${CYN}  +==========================================+${RST}\n"
+printf "${CYN}  |          Uninstall complete!            |${RST}\n"
+printf "${CYN}  +==========================================+${RST}\n"
+printf "\n"
+printf "  yo-rust has been removed.\n"
+printf "\n"
+printf "  ${DIM}Rust itself was NOT removed.${RST}\n"
+printf "  ${DIM}To remove Rust too: ${BLD}rustup self uninstall${RST}\n"
+printf "\n"
+printf "  ${DIM}To reinstall yo-rust at any time:${RST}\n"
+printf "  ${CYN}  curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash${RST}\n"
+printf "\n"

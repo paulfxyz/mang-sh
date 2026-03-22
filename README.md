@@ -9,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 [![Built with Rust](https://img.shields.io/badge/Built%20with-Rust-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
 [![Powered by OpenRouter](https://img.shields.io/badge/Powered%20by-OpenRouter-6c47ff?style=for-the-badge)](https://openrouter.ai)
-[![Version](https://img.shields.io/badge/Version-1.1.2-brightgreen?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.1.3-brightgreen?style=for-the-badge)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-blue?style=for-the-badge)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/paulfxyz/yo-rust/pulls)
 
@@ -40,7 +40,7 @@
   ║            │ │             ██║  ██║╚██████╔╝███████║   ██║     ║
   ║           ┌┘ └┐            ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝     ║
   ║          ┌┴─┐┌─┴┐                                                ║
-  ║          │░░││░░│           v1.1.2  ·  github.com/paulfxyz       ║
+  ║          │░░││░░│           v1.1.3  ·  github.com/paulfxyz       ║
   ║          └──┘└──┘                                                ║
   ╚══════════════════════════════════════════════════════════════════╝
 ```
@@ -127,7 +127,7 @@ $ yo
   ║      └─────┬─┬────┘        ██╔══██╗██║   ██║╚════██║   ██║     ║
   ║            │ │             ██║  ██║╚██████╔╝███████║   ██║     ║
   ║           ┌┘ └┐            ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝     ║
-  ║          │░░││░░│           v1.1.2  ·  github.com/paulfxyz       ║
+  ║          │░░││░░│           v1.1.3  ·  github.com/paulfxyz       ║
   ╚══════════════════════════════════════════════════════════════════╝
 
   ◈  Natural language → Terminal commands, powered by AI.
@@ -432,7 +432,7 @@ The release binary is stripped and LTO-optimised (see `[profile.release]` in Car
 
 > Full history: **[CHANGELOG.md](CHANGELOG.md)**
 
-### 🔖 v1.1.2 — 2026-03-22
+### 🔖 v1.1.3 — 2026-03-22
 
 - 🐛 **Default model reverted to `openai/gpt-4o-mini`** — the free Llama tier hits rate limits quickly; `gpt-4o-mini` is faster, more reliable, and better at following the JSON schema
 - 📋 **Model list reordered** — `gpt-4o-mini` first, free Llama last with a rate-limit warning

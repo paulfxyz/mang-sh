@@ -6,9 +6,36 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [1.1.2] — 2026-03-22
+## [1.1.3] — 2026-03-22
 
-### ✨ New
+### 🐛 Fixed
+
+- **Critical: uninstall.sh prompt was always treated as "No"** when run via
+  `curl | bash`. Root cause: `read -r reply` was reading from the pipe (the
+  script content) rather than the terminal, getting an empty string immediately,
+  which never matched `^[Yy]$`. Fix: all interactive prompts now read from
+  `/dev/tty` directly (`read -r reply </dev/tty`), which is the actual terminal
+  regardless of how stdin is connected.
+- **Prompt label corrected** -- confirmation prompts now show `[Y/N]` (both
+  uppercase) as the primary confirm, or `[y/N]` (uppercase N = default no)
+  for destructive optional steps like config deletion. Previous code showed
+  `[y/N]` for the main confirmation, making it look like No was the default.
+- **Unicode encoding issues removed** -- all three scripts were written with
+  Unicode box-drawing and arrow characters (`─`, `▶`, `✔`, etc.) embedded in
+  bash `echo` statements. These can corrupt on some terminals and editors.
+  All scripts now use pure ASCII (`+`, `-`, `|`, `[ok]`, `[!!]`) for maximum
+  portability.
+- **`printf` replaces `echo -e`** throughout all scripts -- `echo -e` behaviour
+  is not guaranteed across shells (undefined in POSIX). `printf` is portable.
+- **`trap` added** to `yo.sh` and `update.sh` -- temp directory is now cleaned
+  up on any exit (success or failure), preventing leftover build directories.
+- **Version detection improved** in `update.sh` -- added `|| true` guard so
+  the script never exits with an error if `strings` or `grep` finds nothing.
+- **INSTALL.md rewritten** -- added `/dev/tty` note under uninstall, added
+  troubleshooting row for the prompt issue, cleaned all markdown.
+
+### ✨ New (carried from v1.1.2)
+
 
 - **`update.sh`** — dedicated update script (`curl -fsSL .../update.sh | bash`).
   Detects installed version, fetches latest from GitHub, skips if already current,
