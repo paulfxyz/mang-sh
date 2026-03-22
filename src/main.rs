@@ -58,6 +58,7 @@ mod context;
 mod history;
 mod shell;
 mod shortcuts;
+mod telemetry;
 mod ui;
 
 use clap::Parser;
@@ -101,6 +102,30 @@ fn main() {
         if let Err(e) = config::save(&cfg) {
             eprintln!("{}", format!("  ✗  Could not save config: {e}").red());
         }
+    }
+
+    // ── 4b. Periodic telemetry reminder ─────────────────────────────────────────
+    // Every 10 sessions, if telemetry is off and user has never been asked
+    // (or dismissed previously), gently remind them about community sharing.
+    // We increment the counter here and save it.
+    if !cfg.telemetry_share_central && cfg.telemetry_user_key.is_empty() {
+        cfg.sessions_since_telemetry_prompt += 1;
+        // Show reminder at session 10, 20, 30, ... (every 10 sessions)
+        if cfg.sessions_since_telemetry_prompt >= 10 {
+            cfg.sessions_since_telemetry_prompt = 0;
+            println!(
+                "\n  {}  {}",
+                "◈".cyan().bold(),
+                "Tip: yo-rust can share anonymised command data to help improve the tool.".white()
+            );
+            println!(
+                "  {}  {}",
+                "◈".cyan().bold(),
+                "Type !api to configure community sharing (fully optional, off by default).".dimmed()
+            );
+            println!();
+        }
+        let _ = config::save(&cfg); // save updated counter (non-fatal if fails)
     }
 
     // ── 5. Load saved command shortcuts ──────────────────────────────────────
@@ -355,6 +380,27 @@ fn main() {
             // Append to shell history if enabled.
             if history_enabled {
                 history::append_to_history(&suggestion.commands);
+            }
+
+            // ── Telemetry: fire-and-forget background submission ─────────────────
+            // Only sent when the user confirmed it worked (worked = true).
+            // Runs in a detached thread — never blocks the REPL loop.
+            if cfg.telemetry_share_central || !cfg.telemetry_user_key.is_empty() {
+                let shell_label = crate::shell::ShellKind::detect().label().to_string();
+                let entry = telemetry::TelemetryEntry::new(
+                    &line,
+                    &suggestion.commands,
+                    &cfg.model,
+                    &cfg.backend,
+                    &shell_label,
+                    Some(true),
+                );
+                telemetry::submit_async(
+                    entry,
+                    cfg.telemetry_share_central,
+                    if cfg.telemetry_user_key.is_empty() { None } else { Some(cfg.telemetry_user_key.clone()) },
+                    if cfg.telemetry_user_collection.is_empty() { None } else { Some(cfg.telemetry_user_collection.clone()) },
+                );
             }
 
             println!("{}", "  ◈  Great! What else?".dimmed());

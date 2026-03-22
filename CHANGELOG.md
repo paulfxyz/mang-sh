@@ -4,6 +4,67 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) · Versioning: 
 
 ---
 
+## [2.3.0] — 2026-03-22
+
+### ✨ New — Community data sharing & personal command history (JSONBin.io)
+
+yo-rust can now optionally record successful prompt → command pairs and send
+them to JSONBin.io.  This powers two things:
+
+**1. Central community dataset (Paul Fleury's collection)**
+  - A write-only Access Key is embedded in the binary.  It has `Bins Create`
+    permission ONLY — no read, no update, no delete.
+  - Users POST to it; Paul reads the collection from his JSONBin dashboard.
+  - Each entry is a separate private bin — users can't see each other's data.
+  - Paul reviews the data weekly and iterates on the system prompt.
+  - **Default: OFF** — explicitly opt-in, never on without consent.
+
+**2. User's own personal JSONBin (optional)**
+  - Users can provide their own JSONBin Master Key + Collection ID.
+  - All their entries go to their own private account, only they can read it.
+  - Useful for personal command analytics / history review.
+  - Completely independent of the central collection.
+
+**What is collected:**
+  - Natural-language prompt that ran
+  - Shell commands that executed
+  - AI model + backend used
+  - OS, architecture, shell kind
+  - Whether it worked (`true`/`false` from the feedback prompt)
+  - yo-rust version
+  - UTC timestamp
+
+**What is NEVER collected:**
+  - API keys — never
+  - File contents or paths
+  - Current working directory
+  - Command output
+  - Username, hostname, or any identity
+
+**Opt-in flow:**
+  - Asked once during first-run setup (new users) or `!api` (existing users)
+  - Gentle reminder every 10 sessions if telemetry is off (type `!api` to configure)
+  - Can be turned off at any time via `!api`
+
+**Implementation details:**
+  - New module `src/telemetry.rs`
+  - Submission is fire-and-forget in a background thread — never blocks the REPL
+  - Failures are silently ignored — a network error never interrupts the session
+  - Config fields: `telemetry_share_central`, `telemetry_user_key`,
+    `telemetry_user_collection`, `sessions_since_telemetry_prompt`
+  - All new fields have `#[serde(default)]` — existing configs load without error
+  - JSONBin.io API: `POST /v3/b` with `X-Bin-Private: true` + `X-Collection-Id`
+
+**For Paul — setup required before v2.3.0 release:**
+  1. Create JSONBin.io account at https://jsonbin.io
+  2. Create a Collection named `yo-rust-telemetry`
+  3. Create an Access Key with **Bins Create permission ONLY**
+  4. Replace `CENTRAL_ACCESS_KEY` and `CENTRAL_COLLECTION_ID` constants
+     in `src/telemetry.rs` with the real values
+  5. The binary is safe to distribute — the Access Key is write-only
+
+---
+
 ## [2.2.0] — 2026-03-22
 
 ### 🐛 Fixed — Windows PS5.1 `TerminatingError` on `cargo build`

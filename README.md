@@ -10,7 +10,7 @@
 [![Built with Rust](https://img.shields.io/badge/Built%20with-Rust-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
 [![Powered by OpenRouter](https://img.shields.io/badge/Powered%20by-OpenRouter-6c47ff?style=for-the-badge)](https://openrouter.ai)
 [![Ollama](https://img.shields.io/badge/Supports-Ollama-black?style=for-the-badge)](https://ollama.ai)
-[![Version](https://img.shields.io/badge/Version-2.2.0-brightgreen?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.3.0-brightgreen?style=for-the-badge)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue?style=for-the-badge)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/paulfxyz/yo-rust/pulls)
 
@@ -33,7 +33,7 @@
   ║      └─────┬─┬────┘        ██╔══██╗██║   ██║╚════██║   ██║     ║
   ║            │ │             ██║  ██║╚██████╔╝███████║   ██║     ║
   ║           ┌┘ └┐            ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝     ║
-  ║          │░░││░░│           v2.2.0  ·  github.com/paulfxyz       ║
+  ║          │░░││░░│           v2.3.0  ·  github.com/paulfxyz       ║
   ╚══════════════════════════════════════════════════════════════════╝
 ```
 
@@ -437,6 +437,51 @@ Get a key: **[openrouter.ai/keys](https://openrouter.ai/keys)**
 ### 🔖 v1.1.3 — 2026-03-22
 
 - 🐛 Uninstall prompt fix (`/dev/tty`), pure ASCII scripts, `printf` everywhere
+
+---
+
+## 📊 Community data & telemetry
+
+yo-rust can optionally share anonymised data about which prompts produced useful commands. This builds a real-world dataset of natural-language → shell command mappings that gets reviewed weekly to improve the tool.
+
+**What gets shared** (only when you opt in):
+
+| Field | Example |
+|---|---|
+| Your prompt | `"find log files older than 7 days"` |
+| Commands that ran | `["find . -name '*.log' -mtime +7"]` |
+| AI model used | `"openai/gpt-4o-mini"` |
+| OS + shell | `"macos"` + `"zsh"` |
+| Whether it worked | `true` |
+| yo-rust version | `"v2.3.0"` |
+| Timestamp | `"2026-03-22T21:00:00Z"` |
+
+**What is never shared:** API keys, file paths, CWD, command output, username, hostname.
+
+### How it works
+
+Data is sent to [JSONBin.io](https://jsonbin.io) — each successful run creates one private JSON bin. Paul Fleury has a central collection he reviews weekly. Each entry is a separate bin so entries can't be correlated. A write-only Access Key is embedded in the binary — it can create bins but not read or delete them.
+
+You can also set up your **own personal JSONBin** to store your own command history privately.
+
+### Opt in / out
+
+```
+yo ›  !api
+```
+
+You're asked once during first-run setup. A gentle reminder appears every 10 sessions if telemetry is off. Default is **OFF** — it's always opt-in.
+
+### For maintainers — activate the central collection
+
+Before releasing a build with telemetry active:
+
+1. Create a [JSONBin.io](https://jsonbin.io) account
+2. Create a Collection named `yo-rust-telemetry`
+3. Create an Access Key with **Bins Create permission ONLY** (no read, no delete)
+4. Replace `CENTRAL_ACCESS_KEY` and `CENTRAL_COLLECTION_ID` in `src/telemetry.rs`
+
+The write-only key is safe to ship in the binary — it can only create new private bins, nothing else.
 
 ---
 

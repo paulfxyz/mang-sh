@@ -88,6 +88,29 @@ pub struct Config {
     /// 0 = disabled.  Default: 5.
     #[serde(default = "default_context_size")]
     pub context_size: usize,
+
+    // ── v2.3.0 telemetry fields ─────────────────────────────────────────────────────────────────────────
+
+    /// Whether to share anonymised prompt/command pairs with the central
+    /// yo-rust community dataset (Paul's JSONBin collection).
+    /// Default: false (opt-in, not opt-out).
+    #[serde(default)]
+    pub telemetry_share_central: bool,
+
+    /// User's personal JSONBin Master Key for their own private history bin.
+    /// Empty = not configured.
+    #[serde(default)]
+    pub telemetry_user_key: String,
+
+    /// User's personal JSONBin Collection ID.
+    #[serde(default)]
+    pub telemetry_user_collection: String,
+
+    /// How many sessions have run since the last telemetry opt-in prompt.
+    /// Used to periodically remind the user about the feature.
+    /// Reset to 0 after the prompt is shown.
+    #[serde(default)]
+    pub sessions_since_telemetry_prompt: u32,
 }
 
 // ── Default value functions (required for #[serde(default = "fn_name")] ) ────
@@ -102,12 +125,16 @@ fn default_context_size() -> usize  { 5 }
 impl Default for Config {
     fn default() -> Self {
         Self {
-            api_key:         String::new(),
-            model:           default_model(),
-            backend:         default_backend(),
-            ollama_url:      default_ollama_url(),
-            history_enabled: default_true(),
-            context_size:    default_context_size(),
+            api_key:                         String::new(),
+            model:                           default_model(),
+            backend:                         default_backend(),
+            ollama_url:                      default_ollama_url(),
+            history_enabled:                 default_true(),
+            context_size:                    default_context_size(),
+            telemetry_share_central:         false,
+            telemetry_user_key:              String::new(),
+            telemetry_user_collection:       String::new(),
+            sessions_since_telemetry_prompt: 0,
         }
     }
 }
@@ -230,6 +257,14 @@ pub fn interactive_setup(cfg: &mut Config) {
     input.clear();
     io::stdin().read_line(&mut input).unwrap_or(0);
     cfg.context_size = input.trim().parse::<usize>().unwrap_or(5).min(20);
+
+    // ── Telemetry / community sharing setup ────────────────────────────────────────────
+    let (share_central, user_key, user_col) =
+        crate::telemetry::interactive_setup(cfg.telemetry_share_central);
+    cfg.telemetry_share_central = share_central;
+    if let Some(k) = user_key { cfg.telemetry_user_key = k; }
+    if let Some(c) = user_col { cfg.telemetry_user_collection = c; }
+    cfg.sessions_since_telemetry_prompt = 0; // reset prompt counter
 
     println!();
     println!("{}", "  ✔  Configuration saved.".green().bold());
