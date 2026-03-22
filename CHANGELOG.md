@@ -6,9 +6,26 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [1.1.1] — 2026-03-22
+## [1.1.2] — 2026-03-22
 
-### 🐛 Fix
+### ✨ New
+
+- **`update.sh`** — dedicated update script (`curl -fsSL .../update.sh | bash`).
+  Detects installed version, fetches latest from GitHub, skips if already current,
+  replaces binary in-place. Config and aliases are never modified.
+- **`uninstall.sh`** — clean full-removal script. Finds the binary wherever it was
+  installed, asks before deleting config (preserves API key by default), removes
+  the `hi`/`hello` alias block from `~/.zshrc` and `~/.bashrc` using a safe
+  temp-file edit. Prints reinstall command at the end.
+- **`yo.sh` improved** — now detects an existing install and shows the current
+  version before building. Replaces binary at the original install location.
+  Prints update and uninstall one-liners at the end of every install.
+- **`INSTALL.md` rewritten** — single reference for install, update, uninstall,
+  manual steps, troubleshooting table, and platform support matrix.
+- **README** — update and uninstall one-liners added under the install section;
+  `update.sh` and `uninstall.sh` added to the code structure table.
+
+### 🐛 Fix (carried from v1.1.1)
 
 - **Default model changed back to `openai/gpt-4o-mini`** — the free Llama 3.3 70B tier
   hits OpenRouter rate limits quickly under normal usage and does not follow the
