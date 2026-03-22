@@ -14,7 +14,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/paulfxyz/yo-rust/pulls)
 
 <a href="https://paulfleury.com/github/yo-rust.jpeg">
-  <img src="[https://paulfleury.com/github/all-seeing-eye.jpeg](https://paulfleury.com/github/yo-rust.jpeg)" alt="Natural language → Terminal commands, powered by AI" width="700" />
+  <img src="https://paulfleury.com/github/yo-rust.jpeg" alt="Natural language → Terminal commands, powered by AI" width="700" />
 </a>
 
 *Click image to view full resolution*
