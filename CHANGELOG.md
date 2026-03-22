@@ -4,7 +4,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) · Versioning: 
 
 ---
 
-## [2.3.3] — 2026-03-22
+## [2.3.4] — 2026-03-22
+
+### 🐛 Fixed — Shell script colour variables broken on macOS / zsh
+
+Root cause: all three shell scripts (`yo.sh`, `update.sh`, `uninstall.sh`) defined
+colour variables using single-quoted strings:
+```bash
+CYN='\033[0;36m'   # WRONG: stores literal backslash-0-3-3
+```
+In a single-quoted bash string, `\033` is stored as two characters: a backslash
+and `033`.  When `printf` expands `${CYN}` it gets the literal text `\033[0;36m`
+and prints it verbatim instead of interpreting it as an ANSI escape code.
+
+The fix uses ANSI-C quoting (`$'...'`), which the shell interprets at assignment
+time, storing the real ESC byte (`\x1b`):
+```bash
+CYN=$'\033[0;36m'  # CORRECT: stores actual ESC character
+```
+
+All three scripts updated. The done banners, colour-coded status lines, and
+warning/error messages now render correctly in all terminals.
+
+---
+
+## [2.3.4] — 2026-03-22
 
 ### 🔍 Code audit — zero clippy warnings, all logic paths verified
 

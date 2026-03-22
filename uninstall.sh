@@ -26,13 +26,13 @@ set -euo pipefail
 SUDO=""
 
 # -- Colours (pure ANSI escape codes, no Unicode in variable names) -----------
-RED='\033[0;31m'
-GRN='\033[0;32m'
-CYN='\033[0;36m'
-YLW='\033[1;33m'
-BLD='\033[1m'
-DIM='\033[2m'
-RST='\033[0m'
+RED=$'\033[0;31m'
+GRN=$'\033[0;32m'
+CYN=$'\033[0;36m'
+YLW=$'\033[1;33m'
+BLD=$'\033[1m'
+DIM=$'\033[2m'
+RST=$'\033[0m'
 
 ok()    { printf "  ${GRN}[ok]${RST}  %s\n"   "$1"; }
 warn()  { printf "  ${YLW}[!!]${RST}  %s\n"   "$1"; }

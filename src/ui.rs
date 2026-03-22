@@ -24,7 +24,7 @@ use colored::Colorize;
 /// Current version — single source of truth for the banner.
 /// Keep in sync with Cargo.toml `version` field.
 /// Future improvement: replace with env!("CARGO_PKG_VERSION") at compile time.
-const VERSION: &str = "v2.3.3";
+const VERSION: &str = "v2.3.4";
 
 // =============================================================================
 //  print_banner
