@@ -4,6 +4,57 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) · Versioning: 
 
 ---
 
+## [2.1.0] — 2026-03-22
+
+### Root cause fixed
+
+On Windows, PowerShell has a built-in alias called `curl` that maps to
+`Invoke-WebRequest`. This is **not** the real curl binary. `Invoke-WebRequest`
+does not accept `-fsSL` flags, so running the Unix install command:
+
+```
+curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
+```
+
+...fails immediately with:
+```
+Invoke-WebRequest : A parameter cannot be found that matches parameter name 'fsSL'.
+```
+
+And even if the download succeeded, `bash` is not available in native Windows
+PowerShell (without Git Bash or WSL2 installed), so `yo.sh` could never run.
+
+### 🪟 New: PowerShell native scripts
+
+- **`install.ps1`** — native PowerShell installer. Works in PS5 and PS7 without
+  Git Bash, WSL, or the real curl binary. Does everything `yo.sh` does:
+  detects existing install and version, downloads `rustup-init.exe` and installs
+  Rust if missing, downloads source ZIP, builds release binary, installs to
+  `%LOCALAPPDATA%\yo-rust\bin\yo.exe`, adds to user PATH, adds `yo`/`hi`/`hello`
+  aliases to `$PROFILE`.
+  Install command: `iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/install.ps1 | iex`
+
+- **`update.ps1`** — native PowerShell updater. Reads installed version from
+  binary, checks latest in Cargo.toml on GitHub, early-exits if current, builds
+  and replaces in-place. Config never touched.
+  Update command: `iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.ps1 | iex`
+
+- **`uninstall.ps1`** — native PowerShell uninstaller. Removes binary, removes
+  install dir from user PATH, asks before removing config, cleans aliases from
+  `$PROFILE` using regex replacement.
+  Uninstall command: `iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.ps1 | iex`
+
+### 📚 Documentation
+
+- **README** — install section now shows macOS/Linux vs Windows commands side by
+  side at the very top. Prominent warning explains the `curl` alias issue.
+  Windows section updated with `install.ps1` as option 1.
+- **INSTALL.md** — Windows section fully rewritten: all three options (PS native,
+  Git Bash, WSL2), troubleshooting row for the curl alias error.
+- **Code structure table** — lists all 6 scripts (3 Unix + 3 PowerShell).
+
+---
+
 ## [2.0.0] — 2026-03-22
 
 This is a major release.  All v1.x config files are forward-compatible — new fields

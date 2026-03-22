@@ -10,7 +10,7 @@
 [![Built with Rust](https://img.shields.io/badge/Built%20with-Rust-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
 [![Powered by OpenRouter](https://img.shields.io/badge/Powered%20by-OpenRouter-6c47ff?style=for-the-badge)](https://openrouter.ai)
 [![Ollama](https://img.shields.io/badge/Supports-Ollama-black?style=for-the-badge)](https://ollama.ai)
-[![Version](https://img.shields.io/badge/Version-2.0.0-brightgreen?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-2.1.0-brightgreen?style=for-the-badge)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue?style=for-the-badge)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/paulfxyz/yo-rust/pulls)
 
@@ -33,7 +33,7 @@
   ║      └─────┬─┬────┘        ██╔══██╗██║   ██║╚════██║   ██║     ║
   ║            │ │             ██║  ██║╚██████╔╝███████║   ██║     ║
   ║           ┌┘ └┐            ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝     ║
-  ║          │░░││░░│           v2.0.0  ·  github.com/paulfxyz       ║
+  ║          │░░││░░│           v2.1.0  ·  github.com/paulfxyz       ║
   ╚══════════════════════════════════════════════════════════════════╝
 ```
 
@@ -93,20 +93,34 @@ I wanted to type `yo`, describe the thing, get the command, run it.
 
 ## 🚀 Install
 
+**macOS / Linux:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
 ```
 
-Works on macOS, Linux, and Windows (Git Bash / WSL2). Installs Rust automatically if needed.
+**Windows — PowerShell** ⁠(native, no Git Bash needed):
+```powershell
+iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/install.ps1 | iex
+```
+
+**Windows — Git Bash or WSL2:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
+```
+
+> ⚠️ On Windows, `curl` in PowerShell is an alias for `Invoke-WebRequest` and does **not** accept
+> `-fsSL` flags. Always use the PowerShell `iwr` command or open Git Bash.
 
 **Update:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.sh | bash
+curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.sh | bash   # macOS/Linux
+iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.ps1 | iex     # Windows PS
 ```
 
 **Uninstall:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.sh | bash   # macOS/Linux
+iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.ps1 | iex    # Windows PS
 ```
 
 > Full guide: **[INSTALL.md](INSTALL.md)**
@@ -228,23 +242,25 @@ The AI knows that PowerShell 5 doesn't support `&&` (use `;` instead), that cmd.
 
 ### Windows installation
 
-**Option 1 — Git Bash (recommended):**
+> ⚠️ **Important:** On Windows, `curl` is an alias for `Invoke-WebRequest`, which does **not** accept
+> `-fsSL` flags. The Unix install command `curl -fsSL ... | bash` **will not work** in PowerShell.
+> Use the options below instead.
+
+**Option 1 — PowerShell native installer (recommended for PowerShell users):**
+```powershell
+iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/install.ps1 | iex
+```
+Installs Rust automatically, builds yo-rust, sets up PATH and aliases. Works in PowerShell 5 and 7.
+
+**Option 2 — Git Bash:**
+Install [Git for Windows](https://git-scm.com/download/win), open Git Bash, then:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
 ```
 
-**Option 2 — PowerShell (requires winget + Rust):**
-```powershell
-winget install Rustlang.Rust.MSVC
-git clone https://github.com/paulfxyz/yo-rust
-cd yo-rust
-cargo build --release
-copy target\release\yo.exe C:\Windows\System32\yo.exe
-```
-
 **Option 3 — WSL2:**
 ```bash
-# Inside WSL2 terminal — identical to Linux install
+# Inside a WSL2 terminal — identical to Linux
 curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
 ```
 
@@ -300,9 +316,12 @@ yo-rust/
 │   ├── cli.rs       Command-line argument parsing (--dry, --no-history, etc.)
 │   └── ui.rs        Banner · help · suggestion display · context summary
 ├── Cargo.toml       Rust manifest · annotated dependencies
-├── yo.sh            Install (or reinstall) — detects existing version
-├── update.sh        Update to latest — skips if already current
-├── uninstall.sh     Full removal — binary, config (optional), aliases
+├── yo.sh           Install (macOS/Linux/Git Bash) — detects existing version
+├── update.sh       Update (macOS/Linux/Git Bash) — skips if already current
+├── uninstall.sh    Uninstall (macOS/Linux/Git Bash)
+├── install.ps1     Install (Windows PowerShell 5+/7+) — native, no bash
+├── update.ps1      Update (Windows PowerShell)
+├── uninstall.ps1   Uninstall (Windows PowerShell)
 ├── README.md        You're reading it
 ├── INSTALL.md       Full install / update / uninstall reference
 ├── CHANGELOG.md     Version history
@@ -394,6 +413,13 @@ Get a key: **[openrouter.ai/keys](https://openrouter.ai/keys)**
 
 > Full history: **[CHANGELOG.md](CHANGELOG.md)**
 
+### 🔖 v2.1.0 — 2026-03-22
+
+- 🪟 **Windows PowerShell native installer** (`install.ps1`) — fixes the `curl -fsSL` error
+- 🔄 `update.ps1` and `uninstall.ps1` — complete Windows PS management
+- 📝 README: prominent Windows warning, correct `iwr` one-liners at top
+- 📦 INSTALL.md: full Windows section with all three install options
+
 ### 🔖 v2.0.0 — 2026-03-22
 
 - 🏠 Ollama backend — local inference, no API key, offline support
@@ -426,7 +452,7 @@ git push origin feat/your-feature
 Ideas still on the list:
 - Shell history persistence for the yo-rust REPL itself (separate from shell history)
 - `--stop-on-error` flag for multi-command sequences
-- PowerShell native installer (`install.ps1`)
+
 - Keychain/credential manager storage for the API key
 
 ---

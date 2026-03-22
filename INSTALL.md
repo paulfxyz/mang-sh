@@ -58,7 +58,47 @@ echo "alias hello='yo'" >> ~/.zshrc
 
 ## Windows — Install
 
-### Option A — Git Bash (recommended, easiest)
+> ⚠️ **Before you try anything:** On Windows, `curl` in PowerShell is an alias for
+> `Invoke-WebRequest`, not the real curl binary. It does **not** accept `-fsSL` flags.
+> The Unix install command `curl -fsSL ... | bash` **will fail** in PowerShell.
+> Use the options below.
+
+### Option A — PowerShell native installer ✨ recommended
+
+Open any PowerShell window (Win+X → Windows PowerShell or Terminal) and run:
+
+```powershell
+iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/install.ps1 | iex
+```
+
+This script:
+- Installs Rust via `rustup-init.exe` if Rust is not found
+- Downloads the latest source ZIP from GitHub
+- Builds a release binary with `cargo build --release`
+- Installs `yo.exe` to `%LOCALAPPDATA%\yo-rust\bin\`
+- Adds that directory to your user `%PATH%`
+- Adds `yo`, `hi`, `hello` aliases to your PowerShell `$PROFILE`
+
+Works in PowerShell 5 (built-in Windows PowerShell) and PowerShell 7 (pwsh). No Git Bash, no WSL needed.
+
+If you get a script execution policy error:
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+**Update:**
+```powershell
+iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.ps1 | iex
+```
+
+**Uninstall:**
+```powershell
+iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.ps1 | iex
+```
+
+---
+
+### Option B — Git Bash
 
 Install [Git for Windows](https://git-scm.com/download/win) which includes Git Bash,
 then open Git Bash and run:
@@ -67,11 +107,11 @@ then open Git Bash and run:
 curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
 ```
 
-yo-rust will detect Git Bash and generate POSIX-compatible commands.
+yo-rust detects Git Bash and generates POSIX-compatible commands.
 
 ---
 
-### Option B — WSL2
+### Option C — WSL2
 
 Inside a WSL2 terminal (Ubuntu, Debian, etc.) — identical to Linux:
 
@@ -80,30 +120,6 @@ curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
 ```
 
 yo-rust detects your WSL shell (bash/zsh) and generates Linux commands.
-
----
-
-### Option C — PowerShell + Manual build
-
-Requires Rust for Windows and Git. Run in PowerShell:
-
-```powershell
-# Install Rust (if not already installed)
-winget install Rustlang.Rust.MSVC
-
-# Install Git (if not already installed)
-winget install Git.Git
-
-# Clone and build
-git clone https://github.com/paulfxyz/yo-rust
-cd yo-rust
-cargo build --release
-
-# Install (choose a directory in your PATH)
-copy target\release\yo.exe C:\Windows\System32\yo.exe
-```
-
-yo-rust auto-detects PowerShell 5 vs PowerShell 7 and generates the correct syntax for each.
 
 ---
 
@@ -196,6 +212,7 @@ rustup self uninstall
 
 | Problem | Solution |
 |---|---|
+| `curl -fsSL` fails in PowerShell | Use `iwr -useb ./install.ps1 | iex` instead. PowerShell's `curl` is an alias for `Invoke-WebRequest` and does not accept `-fsSL` flags. |
 | `yo: command not found` | Run `source ~/.zshrc`. Check `/usr/local/bin` is in `$PATH`. |
 | `OpenRouter returned 401` | API key invalid. Type `!api` inside yo-rust to update it. |
 | `Build failed: error[E0...]` | Run `rustup update stable` to update your toolchain. |
