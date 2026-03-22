@@ -1,260 +1,268 @@
 // =============================================================================
 //  ui.rs — Terminal UI: banner, help text, suggestion display
+//
+//  All visual chrome lives here — nothing about logic, IO, or AI.
+//  Colours come from the `colored` crate; no ANSI codes are hardcoded.
 // =============================================================================
 
 use crate::ai::Suggestion;
 use colored::Colorize;
 
-// ── ASCII banner printed on every launch ─────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+//  Banner — printed on every launch
+//
+//  Design: block-letter "YO, RUST!" logo above a robot face.
+//  Fits comfortably in an 80-column terminal.
+// ─────────────────────────────────────────────────────────────────────────────
 pub fn print_banner() {
-    // Robot illustration + logotype
-    // Designed to fit an 80-column terminal comfortably.
     println!();
-    println!(
-        "{}",
-        r#"        ╔═══════════════════════════════════════════════════╗"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║                                                   ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║      ██╗   ██╗ ██████╗      ██████╗ ██╗   ██╗    ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║      ╚██╗ ██╔╝██╔═══██╗     ██╔══██╗██║   ██║    ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║       ╚████╔╝ ██║   ██║     ██████╔╝██║   ██║    ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║        ╚██╔╝  ██║   ██║     ██╔══██╗██║   ██║    ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║         ██║   ╚██████╔╝     ██║  ██║╚██████╔╝    ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║         ╚═╝    ╚═════╝      ╚═╝  ╚═╝ ╚═════╝     ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║                                                   ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║         ██████╗ ██╗   ██╗███████╗████████╗        ║"#
-            .white()
-            .bold()
-    );
-    println!(
-        "{}",
-        r#"        ║         ██╔══██╗██║   ██║██╔════╝╚══██╔══╝        ║"#
-            .white()
-            .bold()
-    );
-    println!(
-        "{}",
-        r#"        ║         ██████╔╝██║   ██║███████╗   ██║           ║"#
-            .white()
-            .bold()
-    );
-    println!(
-        "{}",
-        r#"        ║         ██╔══██╗██║   ██║╚════██║   ██║           ║"#
-            .white()
-            .bold()
-    );
-    println!(
-        "{}",
-        r#"        ║         ██║  ██║╚██████╔╝███████║   ██║           ║"#
-            .white()
-            .bold()
-    );
-    println!(
-        "{}",
-        r#"        ║         ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝           ║"#
-            .white()
-            .bold()
-    );
-    println!(
-        "{}",
-        r#"        ║                                                   ║"#
-            .cyan()
-    );
-    // Robot face
-    println!(
-        "{}",
-        r#"        ║          ┌──────────────────────────┐             ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║          │  ╔════╗  YO, RUST!  ╔════╗│             ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║          │  ║ ◉  ║             ║  ◉ ║│             ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║          │  ╚════╝             ╚════╝│             ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║          │       ┌──────────┐        │             ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║          │       │  ◌  ◌  ◌ │        │             ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║          │       └──────────┘        │             ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║          └──────────────────────────┘             ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║             /\              /\                     ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║            /  \            /  \                    ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ║           /    \──────────/    \                   ║"#
-            .cyan()
-    );
-    println!(
-        "{}",
-        r#"        ╚═══════════════════════════════════════════════════╝"#
-            .cyan()
-    );
+
+    // ── YO, block letters ─────────────────────────────────────────────────────
+    let logo_yo = [
+        "  ██╗   ██╗ ██████╗       ██████╗ ██╗   ██╗███████╗████████╗",
+        "  ╚██╗ ██╔╝██╔═══██╗      ██╔══██╗██║   ██║██╔════╝╚══██╔══╝",
+        "   ╚████╔╝ ██║   ██║      ██████╔╝██║   ██║███████╗   ██║   ",
+        "    ╚██╔╝  ██║   ██║      ██╔══██╗██║   ██║╚════██║   ██║   ",
+        "     ██║   ╚██████╔╝      ██║  ██║╚██████╔╝███████║   ██║   ",
+        "     ╚═╝    ╚═════╝       ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝  ",
+    ];
+    for line in &logo_yo {
+        println!("{}", line.cyan().bold());
+    }
+
     println!();
+
+    // ── Robot face ────────────────────────────────────────────────────────────
+    let robot = [
+        "       ┌──────────────────────────────────────┐",
+        "       │  ╔══════╗    yo, rust!   ╔══════╗   │",
+        "       │  ║ ◉  ◉ ║               ║ ◉  ◉ ║   │",
+        "       │  ╚══════╝               ╚══════╝   │",
+        "       │          ┌────────────┐            │",
+        "       │          │ ◌   ◌   ◌  │            │",
+        "       │          └────────────┘            │",
+        "       └──────────────────────────────────────┘",
+        "            /\\                        /\\      ",
+        "           /  \\______________________/  \\     ",
+    ];
+    for line in &robot {
+        println!("{}", line.cyan());
+    }
+
+    println!();
+
+    // ── Tagline ───────────────────────────────────────────────────────────────
     println!(
-        "        {}",
-        "Natural language → Terminal commands, powered by AI.".dimmed()
+        "  {}",
+        "  Natural language → Terminal commands, powered by AI.".white()
+    );
+    println!(
+        "  {}  {}",
+        "  ►".cyan(),
+        "Type !help for options.  Type !api to configure OpenRouter.".dimmed()
     );
     println!();
 }
 
-// ── Short intro / usage hint ──────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+//  Intro — shown after first-run setup, before the REPL prompt
+// ─────────────────────────────────────────────────────────────────────────────
 pub fn print_intro() {
+    println!();
     println!(
-        "  {}  Type a task in plain English and I'll suggest the commands.",
-        "►".cyan()
+        "  {}  {}",
+        "◈".cyan().bold(),
+        "Describe what you want to do — I'll suggest the commands.".white()
     );
     println!(
-        "  {}  Type {} to see all options.",
-        "►".cyan(),
-        "!help".yellow().bold()
+        "  {}  {}",
+        "◈".cyan().bold(),
+        "Press Y to run, N to refine, Ctrl+D to exit.".dimmed()
     );
     println!();
 }
 
-// ── Help text triggered by !help ──────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+//  Help screen — triggered by !help
+// ─────────────────────────────────────────────────────────────────────────────
 pub fn print_help() {
     println!();
-    println!("{}", "  ╔══════════════════════════════════════════╗".cyan());
-    println!("{}", "  ║              Yo, Rust! — Help            ║".cyan());
-    println!("{}", "  ╚══════════════════════════════════════════╝".cyan());
+    println!("{}", "  ╔══════════════════════════════════════════════════╗".cyan());
+    println!("{}", "  ║               🤖  Yo, Rust! — Help               ║".cyan());
+    println!("{}", "  ╚══════════════════════════════════════════════════╝".cyan());
     println!();
-    println!("  {}", "USAGE".white().bold());
+
+    // ── What it is ────────────────────────────────────────────────────────────
+    println!("  {}", "WHAT IT DOES".white().bold());
     println!(
-        "    {}",
-        "Just type your request in plain English, e.g.:".dimmed()
+        "  {}",
+        "  Describe what you want in plain English. yo-rust thinks about".dimmed()
     );
-    println!("    {}  {}", "yo ›".cyan().bold(), "list all .log files older than 7 days");
-    println!("    {}  {}", "yo ›".cyan().bold(), "show the 20 biggest files in this folder");
-    println!("    {}  {}", "yo ›".cyan().bold(), "kill the process on port 8080");
+    println!(
+        "  {}",
+        "  your request, then proposes the shell commands to do it.".dimmed()
+    );
+    println!(
+        "  {}",
+        "  You confirm with Y or decline with N — nothing ever runs without".dimmed()
+    );
+    println!(
+        "  {}",
+        "  your approval.".dimmed()
+    );
     println!();
+
+    // ── Examples ─────────────────────────────────────────────────────────────
+    println!("  {}", "EXAMPLES".white().bold());
+    let examples = [
+        ("find all .log files older than 7 days",           "find . -name \"*.log\" -mtime +7"),
+        ("kill the process on port 8080",                    "lsof -ti:8080 | xargs kill -9"),
+        ("show disk usage for this folder",                  "du -sh ."),
+        ("git log for the last 5 commits with author",       "git log -5 --pretty=format:\"%h %an: %s\""),
+        ("compress the images folder",                       "tar -czf images.tar.gz images/"),
+        ("show all running docker containers",               "docker ps"),
+        ("list files changed in the last 24 hours",         "find . -mtime -1 -type f"),
+        ("check my public IP address",                       "curl -s https://ifconfig.me"),
+    ];
+    for (prompt, cmd) in &examples {
+        println!(
+            "    {}  {}",
+            "yo ›".cyan().bold(),
+            prompt.white()
+        );
+        println!(
+            "         {}  {}",
+            "$".dimmed(),
+            cmd.dimmed()
+        );
+    }
+    println!();
+
+    // ── Shortcuts ─────────────────────────────────────────────────────────────
     println!("  {}", "SHORTCUTS".white().bold());
+    let shortcuts = [
+        ("!help  / !h",   "Display this help screen"),
+        ("!api",          "Update your OpenRouter API key and model"),
+        ("!exit  / !q",   "Quit yo-rust"),
+        ("Ctrl+D",        "Exit at any time"),
+    ];
+    for (key, desc) in &shortcuts {
+        println!(
+            "    {}  {}",
+            format!("{:<16}", key).yellow().bold(),
+            desc.dimmed()
+        );
+    }
+    println!();
+
+    // ── Confirmation ──────────────────────────────────────────────────────────
+    println!("  {}", "CONFIRMATION".white().bold());
     println!(
-        "    {}   — display this help screen",
-        "!help  / !h".yellow().bold()
+        "    {}  Accept and run the suggested command(s)",
+        "Y / Enter  ".green().bold()
     );
     println!(
-        "    {}    — update your OpenRouter API key & model",
-        "!api".yellow().bold()
-    );
-    println!(
-        "    {}   — quit yo-rust",
-        "!exit  / !q".yellow().bold()
+        "    {}  Decline — refine your prompt and try again",
+        "N          ".red().bold()
     );
     println!();
-    println!("  {}", "NAVIGATION".white().bold());
-    println!("    {}  — accept and run the suggested command(s)", "Y".green().bold());
-    println!("    {}  — decline, then refine your prompt", "N".red().bold());
-    println!("    {}  — exit yo-rust at any time", "Ctrl+D".dimmed());
+
+    // ── Natural language config ───────────────────────────────────────────────
+    println!("  {}", "NATURAL LANGUAGE TRIGGERS".white().bold());
+    println!(
+        "  {}",
+        "  These phrases trigger reconfiguration without typing !api:".dimmed()
+    );
+    let nl_triggers = [
+        "change my API key",
+        "update my openrouter key",
+        "switch to a different model",
+        "use a new model",
+    ];
+    for trigger in &nl_triggers {
+        println!("    {}  {}", "›".cyan(), trigger.dimmed());
+    }
     println!();
+
+    // ── Config ────────────────────────────────────────────────────────────────
     println!("  {}", "CONFIG".white().bold());
     println!(
-        "    {}",
-        "Config is stored at:  ~/.config/yo-rust/config.json".dimmed()
+        "  {}  {}",
+        "  Location:".dimmed(),
+        "~/.config/yo-rust/config.json".yellow()
+    );
+    println!(
+        "  {}",
+        "  Plain JSON — you can edit it manually if needed.".dimmed()
+    );
+    println!();
+
+    // ── Footer ────────────────────────────────────────────────────────────────
+    println!(
+        "  {}  {}",
+        "◈".cyan(),
+        "github.com/paulfxyz/yo-rust".dimmed()
     );
     println!();
 }
 
-// ── Print suggested command(s) from the AI ───────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+//  Suggestion display — called after the AI responds
+// ─────────────────────────────────────────────────────────────────────────────
 pub fn print_suggestion(suggestion: &Suggestion) {
     println!();
 
-    // Print optional explanation
-    if let Some(ref explanation) = suggestion.explanation {
-        println!(
-            "  {}  {}",
-            "◈".cyan(),
-            explanation.dimmed()
-        );
-        println!();
-    }
-
     if suggestion.commands.is_empty() {
         println!(
-            "  {}",
-            "No commands were suggested for this request.".yellow()
+            "  {}  {}",
+            "⚠".yellow(),
+            "No commands were suggested for this request. Try rephrasing.".yellow()
         );
         println!();
         return;
     }
 
-    // Print each command in a styled block
-    println!("{}", "  ┌─────────────────────────────────────────────┐".cyan());
+    // ── Explanation ───────────────────────────────────────────────────────────
+    if let Some(ref explanation) = suggestion.explanation {
+        println!(
+            "  {}  {}",
+            "◈".cyan().bold(),
+            explanation.white()
+        );
+        println!();
+    }
+
+    // ── Command block ─────────────────────────────────────────────────────────
+    // Calculate the longest command for padding
+    let max_len = suggestion
+        .commands
+        .iter()
+        .map(|c| c.len())
+        .max()
+        .unwrap_or(40)
+        .max(40);
+
+    let bar = "─".repeat(max_len + 8);
+    println!("  {}{}{}",
+        "┌".cyan(),
+        bar.cyan(),
+        "┐".cyan()
+    );
+
     for cmd in &suggestion.commands {
         println!(
-            "  {}  {}  {}",
+            "  {}  {}  {}  {}",
             "│".cyan(),
-            "  $".dimmed(),
-            cmd.white().bold()
+            "$".dimmed(),
+            cmd.white().bold(),
+            "│".cyan()
         );
     }
-    println!("{}", "  └─────────────────────────────────────────────┘".cyan());
+
+    println!("  {}{}{}",
+        "└".cyan(),
+        bar.cyan(),
+        "┘".cyan()
+    );
     println!();
 }
