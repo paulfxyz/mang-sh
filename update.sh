@@ -72,7 +72,7 @@ if [[ -z "$YO_BIN" ]]; then
     warn "mang.sh does not appear to be installed."
     printf "\n"
     printf "  Install it first:\n"
-    printf "  ${CYN}  curl -fsSL $RAW/yo.sh | bash${RST}\n"
+    printf "  ${CYN}  curl -fsSL https://mang.sh/install | bash${RST}\n"
     printf "\n"
     exit 1
 fi
@@ -137,7 +137,7 @@ if ! command -v cargo &>/dev/null; then
     source "$HOME/.cargo/env" 2>/dev/null || true
 fi
 if ! command -v cargo &>/dev/null; then
-    die "Rust/Cargo not found. Run yo.sh to reinstall (it will install Rust automatically)."
+    die "Rust/Cargo not found. Run 'curl -fsSL https://mang.sh/install | bash' to reinstall (it will install Rust automatically)."
 fi
 info "Rust: $(rustc --version)"
 

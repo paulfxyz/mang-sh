@@ -7,8 +7,55 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) · Versioning: 
 ## [3.0.1] — 2026-03-23
 
 ### Changed
-- Redesigned ASCII banner: clean block-letter `MANG` (cyan) + `.sh` (bold white) two-row layout, `句芒 · Gou Mang · Spirit Messenger` header line, minimal dim box frame. Previous tree-motif design replaced.
-- VERSION const in `src/ui.rs` bumped to `v3.0.1`
+
+#### Banner redesign
+The launch banner has been completely redesigned. The previous tree-motif layout
+(ASCII art cosmic tree on the left, MANG/SH block letters on the right) is
+replaced with a focused two-row block-letter design:
+
+```
+  ╔═══════════════════════════════════════════════╗
+  ║                                               ║
+  ║   句芒   ·   Gou Mang   ·   Spirit Messenger  ║
+  ║                                               ║
+  ║   ███╗   ███╗ █████╗ ███╗  ██╗ ██████╗        ║
+  ║   ████╗ ████║██╔══██╗████╗ ██║██╔════╝        ║
+  ║   ██╔████╔██║███████║██╔██╗██║██║  ███╗       ║
+  ║   ██║╚██╔╝██║██╔══██║██║╚████║██║   ██║       ║
+  ║   ██║ ╚═╝ ██║██║  ██║██║ ╚███║╚██████╔╝       ║
+  ║   ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚══╝ ╚═════╝        ║
+  ║                                               ║
+  ║   ██████╗ ██╗  ██╗                            ║
+  ║   ██╔════╝██║  ██║                            ║
+  ║   ███████╗███████║                            ║
+  ║   ╚════██║██╔══██║                            ║
+  ║   ███████║██║  ██║                            ║
+  ║   ╚══════╝╚═╝  ╚═╝                            ║
+  ║                                               ║
+  ║   v3.0.1  ·  mang.sh  ·  github.com/paulfxyz  ║
+  ╚═══════════════════════════════════════════════╝
+```
+
+Colour scheme:
+- **Cyan** — header line (Chinese glyphs + subtitle), `MANG` block letters
+- **Bold white** — `.sh` block letters
+- **Dimmed** — outer box frame, footer metadata
+
+The Chinese characters `句芒` appear first on the header line — the name in
+its original form, before the romanisation. The tool is named after Gou Mang;
+showing his name in Chinese is the correct presentation.
+
+#### Uninstall script — legacy yo-rust cleanup
+`uninstall.sh` now removes legacy `yo-rust` configuration directories left
+behind from versions before the v3.0.0 rebrand:
+- macOS: `~/Library/Application Support/yo-rust`
+- Linux: `~/.config/yo-rust`
+
+Also cleans `yo-rust aliases` marker lines from shell rc files, in addition
+to the existing `mang.sh aliases` cleanup.
+
+Config directory path corrected from `~/.config/mang.sh` to `~/.config/mang-sh`
+(the correct XDG path the `dirs` crate uses on Linux).
 
 ---
 

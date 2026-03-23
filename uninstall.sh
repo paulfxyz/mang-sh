@@ -131,13 +131,13 @@ case "$(uname -s)" in
     Darwin)
         # macOS: dirs crate uses Application Support
         MACOS_CFG="$HOME/Library/Application Support/mang-sh"
-        XDG_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/mang.sh"
+        XDG_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/mang-sh"
         if   [[ -d "$MACOS_CFG" ]]; then CONFIG_DIR="$MACOS_CFG"
         elif [[ -d "$XDG_CFG"   ]]; then CONFIG_DIR="$XDG_CFG"
         fi
         ;;
     Linux|*)
-        CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/mang.sh"
+        CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/mang-sh"
         ;;
 esac
 
@@ -157,6 +157,37 @@ else
     skip "Config directory not found -- nothing to remove."
 fi
 
+
+# =============================================================================
+#  Step 2b -- Remove legacy yo-rust config (from versions before v3.0.0)
+# =============================================================================
+YO_RUST_CONFIGS=()
+case "$(uname -s)" in
+    Darwin)
+        YO_RUST_CONFIGS+=(
+            "$HOME/Library/Application Support/yo-rust"
+            "${XDG_CONFIG_HOME:-$HOME/.config}/yo-rust"
+        )
+        ;;
+    Linux|*)
+        YO_RUST_CONFIGS+=(
+            "${XDG_CONFIG_HOME:-$HOME/.config}/yo-rust"
+        )
+        ;;
+esac
+
+for LEGACY_CFG in "${YO_RUST_CONFIGS[@]}"; do
+    if [[ -d "$LEGACY_CFG" ]]; then
+        warn "Legacy yo-rust config found: $LEGACY_CFG"
+        if ask_no "Delete legacy yo-rust config?"; then
+            rm -rf "$LEGACY_CFG"
+            ok "Removed legacy config: $LEGACY_CFG"
+        else
+            skip "Legacy config kept at: $LEGACY_CFG"
+        fi
+    fi
+done
+
 # =============================================================================
 #  Step 3 -- Remove shell aliases
 # =============================================================================
@@ -169,13 +200,15 @@ done
 
 ALIASES_REMOVED=0
 for RC_FILE in "${RC_FILES[@]}"; do
-    if grep -q "mang.sh aliases" "$RC_FILE" 2>/dev/null; then
+    if grep -qE "mang.sh aliases|yo-rust aliases" "$RC_FILE" 2>/dev/null; then
         # Write to a temp file then move -- avoids corrupt rc file on crash
         TMP_RC="$(mktemp)"
         grep -v \
             -e "mang.sh aliases" \
+            -e "yo-rust aliases" \
             -e "alias hi='yo'" \
             -e "alias hello='yo'" \
+            -e "alias yo=" \
             "$RC_FILE" > "$TMP_RC"
         mv "$TMP_RC" "$RC_FILE"
         ok "Removed mang.sh aliases from $RC_FILE"
@@ -201,5 +234,5 @@ printf "  ${DIM}Rust itself was NOT removed.${RST}\n"
 printf "  ${DIM}To remove Rust too: ${BLD}rustup self uninstall${RST}\n"
 printf "\n"
 printf "  ${DIM}To reinstall mang.sh at any time:${RST}\n"
-printf "  ${CYN}  curl -fsSL https://mang.sh/yo.sh | bash${RST}\n"
+printf "  ${CYN}  curl -fsSL https://mang.sh/install | bash${RST}\n"
 printf "\n"

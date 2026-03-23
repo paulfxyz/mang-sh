@@ -10,7 +10,7 @@
 [![Built with Rust](https://img.shields.io/badge/Built%20with-Rust-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
 [![Powered by OpenRouter](https://img.shields.io/badge/Powered%20by-OpenRouter-6c47ff?style=for-the-badge)](https://openrouter.ai)
 [![Ollama](https://img.shields.io/badge/Supports-Ollama-black?style=for-the-badge)](https://ollama.ai)
-[![Version](https://img.shields.io/badge/Version-3.0.0-brightgreen?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-3.0.1-brightgreen?style=for-the-badge)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue?style=for-the-badge)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/paulfxyz/mang-sh/pulls)
 
@@ -19,24 +19,26 @@
 ---
 
 ```
-  ╔══════════════════════════════════════════════════════════════════╗
-  ║                  .                                               ║
-  ║                 /|\             ███╗   ███╗ █████╗ ███╗  ██╗    ║
-  ║                / | \            ████╗ ████║██╔══██╗████╗ ██║    ║
-  ║              _/ /|\ \_          ██╔████╔██║███████║██╔██╗██║    ║
-  ║             / \/   \/ \         ██║╚██╔╝██║██╔══██║██║╚████║    ║
-  ║            (  \     /  )        ██║ ╚═╝ ██║██║  ██║██║ ╚███║    ║
-  ║             \_/     \_/         ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚══╝    ║
-  ║               \     /                                            ║
-  ║         ~~~~~ (     ) ~~~~~     ██████╗     ███████╗██╗  ██╗    ║
-  ║        ~      |     |      ~   ██╔════╝     ██╔════╝██║  ██║    ║
-  ║       ~       |     |       ~  ██║  ███╗    ███████╗███████║    ║
-  ║       ~  /\   |     |   /\  ~  ██║   ██║    ╚════██║██╔══██║    ║
-  ║        ~\  /  |     |  /  /~   ╚██████╔╝    ███████║██║  ██║    ║
-  ║         ~~    |     |    ~~      ╚═════╝     ╚══════╝╚═╝  ╚═╝    ║
-  ║               |     |            句芒  ·  Spirit Messenger       ║
-  ║               |_____|            v3.0.0  ·  mang.sh              ║
-  ╚══════════════════════════════════════════════════════════════════╝
+  ╔═══════════════════════════════════════════════╗
+  ║                                               ║
+  ║   句芒   ·   Gou Mang   ·   Spirit Messenger  ║
+  ║                                               ║
+  ║   ███╗   ███╗ █████╗ ███╗  ██╗ ██████╗        ║
+  ║   ████╗ ████║██╔══██╗████╗ ██║██╔════╝        ║
+  ║   ██╔████╔██║███████║██╔██╗██║██║  ███╗       ║
+  ║   ██║╚██╔╝██║██╔══██║██║╚████║██║   ██║       ║
+  ║   ██║ ╚═╝ ██║██║  ██║██║ ╚███║╚██████╔╝       ║
+  ║   ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚══╝ ╚═════╝        ║
+  ║                                               ║
+  ║   ██████╗ ██╗  ██╗                            ║
+  ║   ██╔════╝██║  ██║                            ║
+  ║   ███████╗███████║                            ║
+  ║   ╚════██║██╔══██║                            ║
+  ║   ███████║██║  ██║                            ║
+  ║   ╚══════╝╚═╝  ╚═╝                            ║
+  ║                                               ║
+  ║   v3.0.1  ·  mang.sh  ·  github.com/paulfxyz  ║
+  ╚═══════════════════════════════════════════════╝
 ```
 
 ---
@@ -130,7 +132,7 @@ The misconception: Rust is for operating systems, game engines, embedded firmwar
 | ✅ Always confirms | Every suggestion requires `Y` before anything runs |
 | ⚡ Single binary | No Python, Node.js, or runtime — one file, works everywhere |
 | 🔑 Local config | API key stored in your OS config directory only |
-| 句芒 Spirit banner | Gou Mang's cosmic tree on every launch |
+| 句芒 Spirit banner | Block-letter `MANG` / `.sh` with Gou Mang (句芒) subtitle on every launch |
 | 🧠 Intent detection | "use ollama" / "change model" triggers reconfiguration without API call |
 | 📟 Rich shortcuts | `!help`, `!api`, `!feedback`, `!shortcuts`, `!context`, `!update`, `!exit` |
 | 🐚 Three aliases | `yo`, `hi`, `hello` — all invoke the spirit messenger |
@@ -483,7 +485,7 @@ mang.sh can optionally share anonymised data to improve the AI system prompt. Re
 | Model | `"openai/gpt-4o-mini"` |
 | OS + shell | `"macos"` + `"zsh"` |
 | Worked | `true` |
-| Version | `"v3.0.0"` |
+| Version | `"v3.0.1"` |
 | Timestamp | `"2026-03-23T12:00:00Z"` |
 
 **Never shared:** API keys, file paths, CWD, command output, username, hostname.
@@ -512,10 +514,13 @@ Get a key: **[openrouter.ai/keys](https://openrouter.ai/keys)**
 
 > Full history: **[CHANGELOG.md](CHANGELOG.md)**
 
+### 🔖 v3.0.1 — 2026-03-23
+- 🎨 Redesigned banner: clean block-letter `MANG` (cyan) + `.sh` (bold white), `句芒 · Gou Mang · Spirit Messenger` header, minimal dim frame
+- 🔧 Uninstall script: auto-removes legacy `yo-rust` config directories and aliases
+
 ### 🔖 v3.0.0 — 2026-03-23
 - 🏛️ Rebranded from **Yo, Rust!** to **mang.sh** — Gou Mang (句芒), spirit messenger
 - 🌐 New home: **[mang.sh](https://mang.sh)** · install: `curl -fsSL https://mang.sh/install | bash`
-- 🎨 New banner: Gou Mang's cosmic tree + MANG.SH block-letter logotype
 - 📊 JSONBin collection renamed to `mang-sh-telemetry`
 - 🔍 Zero remaining references to the old name anywhere in the codebase
 

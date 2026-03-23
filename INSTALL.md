@@ -159,6 +159,10 @@ rm -f ~/.local/bin/yo
 rm -rf ~/.config/mang-sh
 rm -rf ~/Library/Application\ Support/mang-sh   # macOS
 
+# Legacy yo-rust config (if you used mang.sh before v3.0.0)
+rm -rf ~/.config/yo-rust
+rm -rf ~/Library/Application\ Support/yo-rust   # macOS
+
 # Aliases — open ~/.zshrc or ~/.bashrc and delete the mang.sh aliases block
 ```
 
@@ -170,6 +174,7 @@ To also remove Rust: `rustup self uninstall`
 
 | Problem | Solution |
 |---|---|
+| Upgrading from yo-rust (pre-v3.0.0) | The uninstall script automatically finds and removes the old `~/.config/yo-rust` config. Or delete it manually: `rm -rf ~/.config/yo-rust` |
 | `curl -fsSL` fails in PowerShell | Use `iwr -useb https://mang.sh/install.ps1 \| iex` — PowerShell's `curl` is `Invoke-WebRequest` and doesn't accept `-fsSL` |
 | `yo: command not found` | Run `source ~/.zshrc`. Check `/usr/local/bin` is in `$PATH`. |
 | `OpenRouter returned 401` | API key invalid — type `!api` inside mang.sh to update it |
