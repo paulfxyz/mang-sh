@@ -4,6 +4,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) · Versioning: 
 
 ---
 
+## [3.0.1] — 2026-03-23
+
+### Changed
+- Redesigned ASCII banner: clean block-letter `MANG` (cyan) + `.sh` (bold white) two-row layout, `句芒 · Gou Mang · Spirit Messenger` header line, minimal dim box frame. Previous tree-motif design replaced.
+- VERSION const in `src/ui.rs` bumped to `v3.0.1`
+
+---
+
 ## [3.0.0] — 2026-03-23
 
 ### 🏛️ Rebrand — Yo, Rust! → mang.sh (句芒)

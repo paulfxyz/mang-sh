@@ -27,52 +27,128 @@ use colored::Colorize;
 
 /// Current version — single source of truth for the banner.
 /// Synced with Cargo.toml `version` field.
-const VERSION: &str = "v3.0.0";
+const VERSION: &str = "v3.0.1";
 
 // =============================================================================
 //  print_banner
 //
-//  The banner renders the Gou Mang cosmic tree motif on the left and the
-//  MANG.SH block-letter logo on the right.  Two-panel layout, 80 columns.
+//  Clean two-row block-letter design:
+//    Row 1 (MANG)  — cyan: the spirit-messenger's name in full
+//    Row 2 (.sh)   — bold white: the extension / invocation form
+//
+//  Header:  句芒  ·  Gou Mang  ·  Spirit Messenger  (Chinese glyphs, name, title)
+//  Footer:  version · mang.sh · github
 //
 //  Colour scheme:
-//    Cyan          — tree, branches, spirit energy, left panel
-//    White + bold  — MANG.SH logotype (bright, commanding)
+//    Cyan          — Chinese header line, MANG block letters
+//    White + bold  — .sh block letters
 //    Dimmed        — outer frame, footer metadata
 // =============================================================================
 pub fn print_banner(dry_run: bool) {
     println!();
 
-    // Outer frame top
-    println!("{}", "  ╔══════════════════════════════════════════════════════════════════╗".cyan().dimmed());
+    // ── frame + header ────────────────────────────────────────────────────────
+    println!("{}", "  ╔═══════════════════════════════════════════════╗".dimmed());
+    println!("{}", "  ║                                               ║".dimmed());
 
-    // Row 1 — antenna tip + M
-    println!("{}", "  ║                  .                                               ║".cyan());
-    println!("{}", "  ║                 /|\\             ███╗   ███╗ █████╗ ███╗  ██╗    ║".cyan());
-    // Row 2 — upper branches + A
-    println!("{}", "  ║                / | \\            ████╗ ████║██╔══██╗████╗ ██║    ║".cyan());
-    println!("{}", "  ║              _/ /|\\ \\_          ██╔████╔██║███████║██╔██╗██║    ║".cyan());
-    // Row 3 — mid tree + N
-    println!("{}", "  ║             / \\/   \\/ \\         ██║╚██╔╝██║██╔══██║██║╚████║    ║".cyan());
-    println!("{}", "  ║            (  \\     /  )        ██║ ╚═╝ ██║██║  ██║██║ ╚███║    ║".white().bold());
-    println!("{}", "  ║             \\_/     \\_/         ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚══╝    ║".white().bold());
-    // Row 4 — trunk top + G.SH
-    println!("{}", "  ║               \\     /                                            ║".cyan());
-    println!("{}", "  ║         ~~~~~ (     ) ~~~~~     ██████╗     ███████╗██╗  ██╗     ║".cyan());
-    println!("{}", "  ║        ~      |     |      ~   ██╔════╝     ██╔════╝██║  ██║     ║".cyan());
-    println!("{}", "  ║       ~       |     |       ~  ██║  ███╗    ███████╗███████║     ║".white().bold());
-    println!("{}", "  ║       ~  /\\   |     |   /\\  ~  ██║   ██║    ╚════██║██╔══██║     ║".white().bold());
-    println!("{}", "  ║        ~\\  /  |     |  /  /~   ╚██████╔╝    ███████║██║  ██║     ║".white().bold());
-    println!("{}", "  ║         ~~    |     |    ~~      ╚═════╝     ╚══════╝╚═╝  ╚═╝     ║".white().bold());
-    // Row 5 — trunk base
-    println!("{}", "  ║               |     |                                            ║".cyan());
-    println!("{}", "  ║               |     |            句芒  ·  Spirit Messenger       ║".cyan().dimmed());
+    // Chinese characters, romanised name, subtitle — all cyan
+    println!(
+        "  {}   {}   {}",
+        "║".dimmed(),
+        "句芒   ·   Gou Mang   ·   Spirit Messenger".cyan(),
+        "║".dimmed()
+    );
 
-    // Version + footer
-    println!("{}", format!(
-        "  ║               |_____|            {VERSION}  ·  mang.sh                  ║"
-    ).cyan().dimmed());
-    println!("{}", "  ╚══════════════════════════════════════════════════════════════════╝".cyan().dimmed());
+    println!("{}", "  ║                                               ║".dimmed());
+
+    // ── MANG block letters (cyan) ─────────────────────────────────────────────
+    println!(
+        "  {}   {}        {}",
+        "║".dimmed(),
+        "███╗   ███╗ █████╗ ███╗  ██╗ ██████╗".cyan(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}        {}",
+        "║".dimmed(),
+        "████╗ ████║██╔══██╗████╗ ██║██╔════╝".cyan(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}       {}",
+        "║".dimmed(),
+        "██╔████╔██║███████║██╔██╗██║██║  ███╗".cyan(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}       {}",
+        "║".dimmed(),
+        "██║╚██╔╝██║██╔══██║██║╚████║██║   ██║".cyan(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}       {}",
+        "║".dimmed(),
+        "██║ ╚═╝ ██║██║  ██║██║ ╚███║╚██████╔╝".cyan(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}        {}",
+        "║".dimmed(),
+        "╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚══╝ ╚═════╝".cyan(),
+        "║".dimmed()
+    );
+
+    println!("{}", "  ║                                               ║".dimmed());
+
+    // ── .sh block letters (bold white) ───────────────────────────────────────
+    println!(
+        "  {}   {}                            {}",
+        "║".dimmed(),
+        "██████╗ ██╗  ██╗".bold(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}                            {}",
+        "║".dimmed(),
+        "██╔════╝██║  ██║".bold(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}                            {}",
+        "║".dimmed(),
+        "███████╗███████║".bold(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}                            {}",
+        "║".dimmed(),
+        "╚════██║██╔══██║".bold(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}                            {}",
+        "║".dimmed(),
+        "███████║██║  ██║".bold(),
+        "║".dimmed()
+    );
+    println!(
+        "  {}   {}                            {}",
+        "║".dimmed(),
+        "╚══════╝╚═╝  ╚═╝".bold(),
+        "║".dimmed()
+    );
+
+    println!("{}", "  ║                                               ║".dimmed());
+
+    // ── footer ────────────────────────────────────────────────────────────────
+    println!(
+        "  {}   {}  ·  mang.sh  ·  github.com/paulfxyz  {}",
+        "║".dimmed(),
+        VERSION.dimmed(),
+        "║".dimmed()
+    );
+    println!("{}", "  ╚═══════════════════════════════════════════════╝".dimmed());
 
     println!();
     println!(
