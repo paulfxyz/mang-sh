@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  update.sh -- Update yo-rust to the latest version
-#  https://github.com/paulfxyz/yo-rust
+#  update.sh -- Update mang.sh to the latest version
+#  https://github.com/paulfxyz/mang-sh
 #
 #  Usage:
-#    curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.sh | bash
+#    curl -fsSL https://mang.sh/update.sh | bash
 #
 #  Or run directly after download:
 #    bash update.sh
@@ -16,15 +16,15 @@
 #    4. Exits cleanly if already up to date (no unnecessary builds)
 #    5. Clones the latest source, builds a release binary
 #    6. Replaces the binary at its current install location
-#    7. Never touches your config (~/.config/yo-rust/config.json)
+#    7. Never touches your config (~/.config/mang-sh/config.json)
 #
 #  Works with: v1.0.0 and later
 # =============================================================================
 
 set -euo pipefail
 
-REPO="https://github.com/paulfxyz/yo-rust"
-RAW="https://raw.githubusercontent.com/paulfxyz/yo-rust/main"
+REPO="https://github.com/paulfxyz/mang-sh"
+RAW="https://mang.sh"
 TMP_DIR="$(mktemp -d)"
 SUDO=""
 
@@ -49,7 +49,7 @@ trap 'rm -rf "$TMP_DIR"' EXIT
 # -- Banner -------------------------------------------------------------------
 printf "\n"
 printf "${CYN}  +==========================================+${RST}\n"
-printf "${CYN}  |          Updating  Yo, Rust!            |${RST}\n"
+printf "${CYN}  |          Updating  mang.sh            |${RST}\n"
 printf "${CYN}  +==========================================+${RST}\n"
 printf "\n"
 
@@ -69,7 +69,7 @@ if [[ -z "$YO_BIN" ]]; then
 fi
 
 if [[ -z "$YO_BIN" ]]; then
-    warn "yo-rust does not appear to be installed."
+    warn "mang.sh does not appear to be installed."
     printf "\n"
     printf "  Install it first:\n"
     printf "  ${CYN}  curl -fsSL $RAW/yo.sh | bash${RST}\n"
@@ -145,12 +145,12 @@ info "Rust: $(rustc --version)"
 #  Step 6 -- Clone and build
 # =============================================================================
 log "Cloning latest source..."
-git clone --depth 1 "$REPO" "$TMP_DIR/yo-rust" &>/dev/null
+git clone --depth 1 "$REPO" "$TMP_DIR/mang-sh" &>/dev/null
 
 log "Building release binary..."
-(cd "$TMP_DIR/yo-rust" && cargo build --release --quiet 2>&1)
+(cd "$TMP_DIR/mang-sh" && cargo build --release --quiet 2>&1)
 
-BINARY="$TMP_DIR/yo-rust/target/release/yo"
+BINARY="$TMP_DIR/mang-sh/target/release/yo"
 [[ -f "$BINARY" ]] || die "Build failed -- binary not found. Please open an issue at $REPO/issues"
 ok "Build complete."
 
@@ -178,7 +178,7 @@ printf "${CYN}  +==========================================+${RST}\n"
 printf "${CYN}  |           Update complete!              |${RST}\n"
 printf "${CYN}  +==========================================+${RST}\n"
 printf "\n"
-printf "  ${BLD}yo-rust ${CYN}v${LATEST_VERSION}${RST}${BLD} is ready.${RST}\n"
+printf "  ${BLD}mang.sh${RST}${BLD} is ready.${RST}\n"
 printf "  ${DIM}Type ${BLD}yo${RST}${DIM} to start.${RST}\n"
 printf "\n"
 printf "  ${DIM}Your config was not changed.${RST}\n"

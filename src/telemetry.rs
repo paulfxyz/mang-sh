@@ -1,6 +1,6 @@
 // =============================================================================
 //  telemetry.rs — Community data sharing via JSONBin.io
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  WHAT THIS MODULE DOES
 //  ─────────────────────
@@ -8,7 +8,7 @@
 //  "Did that work?" → Y) is POSTed as a private JSON entry to JSONBin.io.
 //
 //  Paul Fleury reviews the accumulated collection at:
-//    https://jsonbin.io → Collections → yo-rust-telemetry
+//    https://jsonbin.io → Collections → mang.sh-telemetry
 //  and uses it to improve the AI system prompt and fix per-OS/shell issues.
 //
 //  ┌──────────────────────────────────────────┬────────────────────────────────┐
@@ -19,7 +19,7 @@
 //  │  ✓ AI model + backend                    │  ✗ Working directory (CWD)     │
 //  │  ✓ OS, arch, shell kind                  │  ✗ Command output              │
 //  │  ✓ worked = true / false                 │  ✗ Username / hostname / IP    │
-//  │  ✓ yo-rust version                       │                                │
+//  │  ✓ mang.sh version                       │                                │
 //  │  ✓ UTC timestamp                         │                                │
 //  └──────────────────────────────────────────┴────────────────────────────────┘
 //
@@ -33,7 +33,7 @@
 //      Content-Type:    application/json
 //      X-Access-Key:    <write-only key>     — embedded in binary, safe to ship
 //      X-Bin-Private:   true                 — entries are private
-//      X-Bin-Name:      yo-rust-2026-03-22   — for easy dashboard filtering
+//      X-Bin-Name:      mang.sh-2026-03-22   — for easy dashboard filtering
 //      X-Collection-Id: <collection id>      — groups all entries together
 //
 //  Each POST creates a NEW bin (document) — not appended to an existing one.
@@ -60,8 +60,8 @@
 //
 //  DEBUGGING
 //  ─────────
-//  Set YODEBUG=1 to see verbose output on stderr:
-//    YODEBUG=1 yo
+//  Set MANGDEBUG=1 to see verbose output on stderr:
+//    MANGDEBUG=1 yo
 //  Prints the JSON payload and HTTP response code for every telemetry request.
 // =============================================================================
 
@@ -71,7 +71,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 // ── Central collection credentials ───────────────────────────────────────────
 // Write-only Access Key: Bins Create permission only — safe to ship in binary.
-// Collection: yo-rust-telemetry (created 2026-03-22).
+// Collection: mang-sh-telemetry (created 2026-03-22).
 // Master Key: kept private, never in source. Contact: hello@paulfleury.com
 pub const CENTRAL_ACCESS_KEY: &str    = "$2a$10$xJ5kER3PeMHMZKWRnJxhrehfH6wHeGURAhdmmctbLnboMhTXyJW9a";
 pub const CENTRAL_COLLECTION_ID: &str = "69c05e31b7ec241ddc91ee96";
@@ -114,8 +114,8 @@ pub struct TelemetryEntry {
     ///   None        = test entry
     pub worked: Option<bool>,
 
-    /// yo-rust version string, populated at compile time via env!().
-    pub yo_rust_version: &'static str,
+    /// mang.sh version string, populated at compile time via env!().
+    pub mang_sh_version: &'static str,
 
     /// ISO 8601 UTC timestamp, e.g. "2026-03-22T21:30:00Z".
     pub timestamp: String,
@@ -140,7 +140,7 @@ impl TelemetryEntry {
             arch:            std::env::consts::ARCH,
             shell:           shell.to_string(),
             worked,
-            yo_rust_version: env!("CARGO_PKG_VERSION"),
+            mang_sh_version: env!("CARGO_PKG_VERSION"),
             timestamp:       iso8601_now(),
         }
     }
@@ -164,7 +164,7 @@ pub fn submit(
     user_master_key: Option<&str>,
     user_collection: Option<&str>,
 ) -> Result<bool, String> {
-    let debug = std::env::var("YODEBUG").is_ok();
+    let debug = std::env::var("MANGDEBUG").is_ok();
 
     let client = reqwest::blocking::Client::builder()
         .timeout(std::time::Duration::from_secs(15))
@@ -176,19 +176,19 @@ pub fn submit(
         .map_err(|e| format!("JSON serialisation failed: {e}"))?;
 
     if debug {
-        eprintln!("[YODEBUG] payload:\n{json_body}");
+        eprintln!("[MANGDEBUG] payload:\n{json_body}");
     }
 
-    // Bin name: "yo-rust-2026-03-22" — used for dashboard filtering by date.
+    // Bin name: "mang.sh-2026-03-22" — used for dashboard filtering by date.
     // Slicing [..10] is safe: iso8601_now() always produces at least 10 chars.
-    let bin_name = format!("yo-rust-{}", &entry.timestamp[..10]);
+    let bin_name = format!("mang.sh-{}", &entry.timestamp[..10]);
 
     let mut posted_any = false;
 
     // ── Central destination (Paul's collection) ───────────────────────────────
     if share_central {
         if debug {
-            eprintln!("[YODEBUG] → central collection {CENTRAL_COLLECTION_ID}");
+            eprintln!("[MANGDEBUG] → central collection {CENTRAL_COLLECTION_ID}");
         }
 
         let result = client
@@ -207,7 +207,7 @@ pub fn submit(
                 // Read body once (consumes response), only in debug mode.
                 if debug {
                     let body = r.text().unwrap_or_default();
-                    eprintln!("[YODEBUG] central HTTP {status}: {body}");
+                    eprintln!("[MANGDEBUG] central HTTP {status}: {body}");
                 }
                 if status.is_success() {
                     posted_any = true;
@@ -215,7 +215,7 @@ pub fn submit(
             }
             Err(e) => {
                 if debug {
-                    eprintln!("[YODEBUG] central network error: {e}");
+                    eprintln!("[MANGDEBUG] central network error: {e}");
                 }
                 // Network errors are silently swallowed — never interrupt the user.
             }
@@ -226,7 +226,7 @@ pub fn submit(
     if let (Some(key), Some(collection)) = (user_master_key, user_collection) {
         if !key.is_empty() && !collection.is_empty() {
             if debug {
-                eprintln!("[YODEBUG] → personal collection {collection}");
+                eprintln!("[MANGDEBUG] → personal collection {collection}");
             }
 
             let result = client
@@ -244,7 +244,7 @@ pub fn submit(
                     let status = r.status();
                     if debug {
                         let body = r.text().unwrap_or_default();
-                        eprintln!("[YODEBUG] personal HTTP {status}: {body}");
+                        eprintln!("[MANGDEBUG] personal HTTP {status}: {body}");
                     }
                     if status.is_success() {
                         posted_any = true;
@@ -252,7 +252,7 @@ pub fn submit(
                 }
                 Err(e) => {
                     if debug {
-                        eprintln!("[YODEBUG] personal network error: {e}");
+                        eprintln!("[MANGDEBUG] personal network error: {e}");
                     }
                 }
             }
@@ -362,7 +362,7 @@ pub fn iso8601_now() -> String {
 
 /// Returns true if `year` is a Gregorian leap year.
 /// Valid until 2100 (which is not a leap year and would need special handling,
-/// but yo-rust won't be running in 2100).
+/// but mang.sh won't be running in 2100).
 #[inline]
 fn is_leap(year: u32) -> bool {
     year.is_multiple_of(4) && (!year.is_multiple_of(100) || year.is_multiple_of(400))

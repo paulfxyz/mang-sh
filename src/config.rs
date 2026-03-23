@@ -1,13 +1,13 @@
 // =============================================================================
-//  config.rs — Persistent configuration for yo-rust
-//  https://github.com/paulfxyz/yo-rust
+//  config.rs — Persistent configuration for mang.sh
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────
-//  yo-rust stores all user preferences in a single JSON file:
-//    macOS  → ~/Library/Application Support/yo-rust/config.json
-//    Linux  → ~/.config/yo-rust/config.json  (or $XDG_CONFIG_HOME)
-//    Windows→ %APPDATA%\yo-rust\config.json
+//  mang.sh stores all user preferences in a single JSON file:
+//    macOS  → ~/Library/Application Support/mang-sh/config.json
+//    Linux  → ~/.config/mang-sh/config.json  (or $XDG_CONFIG_HOME)
+//    Windows→ %APPDATA%\mang.sh\config.json
 //
 //  v2.0.0 adds four new configuration fields:
 //    backend        — "openrouter" (default) or "ollama" (local)
@@ -46,7 +46,7 @@ use std::path::PathBuf;
 //  Config struct
 // =============================================================================
 
-/// All persistent user preferences for yo-rust.
+/// All persistent user preferences for mang.sh.
 ///
 /// Every field has a `#[serde(default)]` so that deserialising an older config
 /// file (with fewer fields) never panics — missing fields use the Default impl.
@@ -92,7 +92,7 @@ pub struct Config {
     // ── v2.3.0 telemetry fields ─────────────────────────────────────────────────────────────────────────
 
     /// Whether to share anonymised prompt/command pairs with the central
-    /// yo-rust community dataset (Paul's JSONBin collection).
+    /// mang.sh community dataset (Paul's JSONBin collection).
     /// Default: false (opt-in, not opt-out).
     #[serde(default)]
     pub telemetry_share_central: bool,
@@ -151,7 +151,7 @@ impl Default for Config {
 ///   3. XDG_CONFIG_HOME could theoretically change between calls.
 fn config_path() -> PathBuf {
     let base = dirs::config_dir().unwrap_or_else(|| PathBuf::from("."));
-    base.join("yo-rust").join("config.json")
+    base.join("mang.sh").join("config.json")
 }
 
 // =============================================================================
@@ -207,7 +207,7 @@ pub fn save(cfg: &Config) -> Result<(), Box<dyn std::error::Error>> {
 pub fn interactive_setup(cfg: &mut Config) {
     println!();
     println!("{}", "  ╔════════════════════════════════════════════════╗".cyan());
-    println!("{}", "  ║            yo-rust Configuration               ║".cyan().bold());
+    println!("{}", "  ║            mang.sh Configuration               ║".cyan().bold());
     println!("{}", "  ╚════════════════════════════════════════════════╝".cyan());
     println!();
 

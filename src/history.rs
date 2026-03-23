@@ -1,13 +1,13 @@
 // =============================================================================
 //  history.rs — Shell history integration
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────
-//  When a user confirms and runs a command via yo-rust, that command is never
+//  When a user confirms and runs a command via mang.sh, that command is never
 //  added to their shell's history file.  This means:
-//    - Pressing ↑ in the terminal after running yo-rust won't show the command
-//    - `history | grep` won't find commands run through yo-rust
+//    - Pressing ↑ in the terminal after running mang.sh won't show the command
+//    - `history | grep` won't find commands run through mang.sh
 //    - The user has no persistent record of what ran
 //
 //  This module fixes that by appending each confirmed command directly to the
@@ -44,7 +44,7 @@
 //
 //  MULTI-COMMAND ENTRIES
 //  ──────────────────────
-//  When yo-rust suggests multiple commands ("first do X, then do Y"), each
+//  When mang.sh suggests multiple commands ("first do X, then do Y"), each
 //  command is appended as a separate history entry rather than joining them
 //  with &&.  This matches how the user would have typed them interactively
 //  and makes individual commands findable via history search.

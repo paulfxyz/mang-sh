@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
-#  uninstall.sh -- Remove yo-rust from your system
-#  https://github.com/paulfxyz/yo-rust
+#  uninstall.sh -- Remove mang.sh from your system
+#  https://github.com/paulfxyz/mang-sh
 #
 #  Usage (pipe-safe -- reads from /dev/tty, not stdin):
-#    curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.sh | bash
+#    curl -fsSL https://mang.sh/uninstall.sh | bash
 #
 #  Or run directly after download:
 #    bash uninstall.sh
@@ -12,7 +12,7 @@
 #  What this script removes:
 #    - The `yo` binary (searched in PATH and common install locations)
 #    - The config directory -- ASKS BEFORE DELETING (keeps your API key by default)
-#    - The yo-rust alias block from ~/.zshrc, ~/.bashrc, ~/.bash_profile
+#    - The mang.sh alias block from ~/.zshrc, ~/.bashrc, ~/.bash_profile
 #
 #  What it leaves alone:
 #    - Rust / rustup (you may use it for other projects)
@@ -63,15 +63,15 @@ ask_no() {
 # -- Banner -------------------------------------------------------------------
 printf "\n"
 printf "${CYN}  +==========================================+${RST}\n"
-printf "${CYN}  |       Uninstalling  Yo, Rust!           |${RST}\n"
+printf "${CYN}  |       Uninstalling  mang.sh           |${RST}\n"
 printf "${CYN}  +==========================================+${RST}\n"
 printf "\n"
-printf "  ${DIM}This will remove yo-rust from your system.${RST}\n"
+printf "  ${DIM}This will remove mang.sh from your system.${RST}\n"
 printf "  ${DIM}Your OpenRouter API key will be kept unless you say otherwise.${RST}\n"
 printf "\n"
 
 # -- Confirm intent -----------------------------------------------------------
-if ! ask_yes "Are you sure you want to uninstall yo-rust?"; then
+if ! ask_yes "Are you sure you want to uninstall mang.sh?"; then
     printf "\n"
     printf "  ${DIM}Cancelled. Nothing was changed.${RST}\n"
     printf "\n"
@@ -130,14 +130,14 @@ CONFIG_DIR=""
 case "$(uname -s)" in
     Darwin)
         # macOS: dirs crate uses Application Support
-        MACOS_CFG="$HOME/Library/Application Support/yo-rust"
-        XDG_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/yo-rust"
+        MACOS_CFG="$HOME/Library/Application Support/mang-sh"
+        XDG_CFG="${XDG_CONFIG_HOME:-$HOME/.config}/mang.sh"
         if   [[ -d "$MACOS_CFG" ]]; then CONFIG_DIR="$MACOS_CFG"
         elif [[ -d "$XDG_CFG"   ]]; then CONFIG_DIR="$XDG_CFG"
         fi
         ;;
     Linux|*)
-        CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/yo-rust"
+        CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/mang.sh"
         ;;
 esac
 
@@ -169,22 +169,22 @@ done
 
 ALIASES_REMOVED=0
 for RC_FILE in "${RC_FILES[@]}"; do
-    if grep -q "yo-rust aliases" "$RC_FILE" 2>/dev/null; then
+    if grep -q "mang.sh aliases" "$RC_FILE" 2>/dev/null; then
         # Write to a temp file then move -- avoids corrupt rc file on crash
         TMP_RC="$(mktemp)"
         grep -v \
-            -e "yo-rust aliases" \
+            -e "mang.sh aliases" \
             -e "alias hi='yo'" \
             -e "alias hello='yo'" \
             "$RC_FILE" > "$TMP_RC"
         mv "$TMP_RC" "$RC_FILE"
-        ok "Removed yo-rust aliases from $RC_FILE"
+        ok "Removed mang.sh aliases from $RC_FILE"
         ALIASES_REMOVED=1
     fi
 done
 
 if [[ $ALIASES_REMOVED -eq 0 ]]; then
-    skip "No yo-rust aliases found in shell config files."
+    skip "No mang.sh aliases found in shell config files."
 fi
 
 # =============================================================================
@@ -195,11 +195,11 @@ printf "${CYN}  +==========================================+${RST}\n"
 printf "${CYN}  |          Uninstall complete!            |${RST}\n"
 printf "${CYN}  +==========================================+${RST}\n"
 printf "\n"
-printf "  yo-rust has been removed.\n"
+printf "  mang.sh has been removed.\n"
 printf "\n"
 printf "  ${DIM}Rust itself was NOT removed.${RST}\n"
 printf "  ${DIM}To remove Rust too: ${BLD}rustup self uninstall${RST}\n"
 printf "\n"
-printf "  ${DIM}To reinstall yo-rust at any time:${RST}\n"
-printf "  ${CYN}  curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash${RST}\n"
+printf "  ${DIM}To reinstall mang.sh at any time:${RST}\n"
+printf "  ${CYN}  curl -fsSL https://mang.sh/yo.sh | bash${RST}\n"
 printf "\n"

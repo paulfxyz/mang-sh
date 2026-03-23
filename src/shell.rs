@@ -1,6 +1,6 @@
 // =============================================================================
 //  shell.rs — Shell environment detection and command execution
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────

@@ -1,19 +1,23 @@
 // =============================================================================
 //  ui.rs — Terminal UI: banner, help, suggestion display, prompts
-//  https://github.com/paulfxyz/yo-rust
+//  https://mang.sh  |  github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────
 //  All visual output lives here.  No business logic, no I/O beyond stdout.
 //  Every public function is self-contained and stateless.
 //
-//  v2.0.0 additions:
-//    • Dry-run indicator in banner and suggestion display
-//    • Backend indicator (OpenRouter vs Ollama) in intro line
-//    • Context turn counter in help screen
-//    • !context / !clear shortcuts documented
-//    • print_context_summary() — show what the AI currently "remembers"
-//    • print_empty_suggestion() — graceful display when AI returns no commands
+//  BRAND
+//  ─────
+//  mang.sh draws its name and spirit from Gou Mang (句芒) — the ancient
+//  Chinese deity who serves as messenger between heaven and earth, between
+//  the Emperor's will and the mortal world.  In mang.sh, Gou Mang bridges
+//  human intent and machine syntax.  You speak; he translates; the shell listens.
+//
+//  The banner renders Gou Mang's tree motif (his sacred cosmic tree that
+//  connects the celestial and terrestrial realms) alongside the MANG.SH
+//  block-letter logotype.  The binary is still invoked as `yo` — a casual
+//  direct summons.  No ceremony.  The god comes when called.
 // =============================================================================
 
 use crate::ai::Suggestion;
@@ -22,89 +26,74 @@ use crate::context::ConversationContext;
 use colored::Colorize;
 
 /// Current version — single source of truth for the banner.
-/// Keep in sync with Cargo.toml `version` field.
-/// Future improvement: replace with env!("CARGO_PKG_VERSION") at compile time.
-const VERSION: &str = "v2.3.5";
+/// Synced with Cargo.toml `version` field.
+const VERSION: &str = "v3.0.0";
 
 // =============================================================================
 //  print_banner
 //
-//  Split-panel layout:
-//    LEFT  — ASCII robot (antenna, eyes, arms, mouth, chest, legs)
-//    RIGHT — Block-letter "YO," logo (cyan) + "RUST!" logo (white/bold)
+//  The banner renders the Gou Mang cosmic tree motif on the left and the
+//  MANG.SH block-letter logo on the right.  Two-panel layout, 80 columns.
 //
-//  Dry-run mode adds a visible [DRY RUN] badge so the user always knows
-//  the session is non-destructive at a glance.
+//  Colour scheme:
+//    Cyan          — tree, branches, spirit energy, left panel
+//    White + bold  — MANG.SH logotype (bright, commanding)
+//    Dimmed        — outer frame, footer metadata
 // =============================================================================
 pub fn print_banner(dry_run: bool) {
     println!();
 
-    // Each entry: (line_text, colour_code)
-    //   0 = cyan            robot parts + YO, logo
-    //   1 = white + bold    RUST! logo
-    //   2 = cyan + dimmed   outer frame, footer
-    let lines: &[(&str, u8)] = &[
-        ("  ╔══════════════════════════════════════════════════════════════════╗", 2),
-        ("  ║                                                                  ║", 2),
-        ("  ║           ╷▲╷             ██╗   ██╗ ██████╗                     ║", 0),
-        ("  ║      ┌────┴─┴────┐        ╚██╗ ██╔╝██╔═══██╗                    ║", 0),
-        ("  ║      │ ╔═══╗╔═══╗│         ╚████╔╝ ██║   ██║                    ║", 0),
-        ("  ║      │ ║◈  ◈║◈  ◈║│          ╚██╔╝  ██║   ██║                    ║", 0),
-        ("  ║      │ ╚═══╝╚═══╝│           ██║   ╚██████╔╝                    ║", 0),
-        ("  ║ ┌──┐ │ ┌─────────┐ │ ┌──┐    ╚═╝    ╚═════╝                     ║", 0),
-        ("  ║ │░░├─┤ │ · · · · │ ├─░░│                                        ║", 0),
-        ("  ║ └──┘ │ ┌──┬──┬──┐ │ └──┘   ██████╗ ██╗   ██╗███████╗████████╗  ║", 1),
-        ("  ║      │ │▓▓│▓▓│▓▓│ │        ██╔══██╗██║   ██║██╔════╝╚══██╔══╝  ║", 1),
-        ("  ║      │ └──┴──┴──┘ │        ██████╔╝██║   ██║███████╗   ██║     ║", 1),
-        ("  ║      └─────┬─┬────┘        ██╔══██╗██║   ██║╚════██║   ██║     ║", 1),
-        ("  ║            │ │             ██║  ██║╚██████╔╝███████║   ██║     ║", 1),
-        ("  ║           ┌┘ └┐            ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝     ║", 1),
-        ("  ║          ┌┴─┐┌─┴┐                                                ║", 2),
-    ];
+    // Outer frame top
+    println!("{}", "  ╔══════════════════════════════════════════════════════════════════╗".cyan().dimmed());
 
-    for (line, code) in lines {
-        match code {
-            0 => println!("{}", line.cyan()),
-            1 => println!("{}", line.white().bold()),
-            _ => println!("{}", line.cyan().dimmed()),
-        }
-    }
+    // Row 1 — antenna tip + M
+    println!("{}", "  ║                  .                                               ║".cyan());
+    println!("{}", "  ║                 /|\\             ███╗   ███╗ █████╗ ███╗  ██╗    ║".cyan());
+    // Row 2 — upper branches + A
+    println!("{}", "  ║                / | \\            ████╗ ████║██╔══██╗████╗ ██║    ║".cyan());
+    println!("{}", "  ║              _/ /|\\ \\_          ██╔████╔██║███████║██╔██╗██║    ║".cyan());
+    // Row 3 — mid tree + N
+    println!("{}", "  ║             / \\/   \\/ \\         ██║╚██╔╝██║██╔══██║██║╚████║    ║".cyan());
+    println!("{}", "  ║            (  \\     /  )        ██║ ╚═╝ ██║██║  ██║██║ ╚███║    ║".white().bold());
+    println!("{}", "  ║             \\_/     \\_/         ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚══╝    ║".white().bold());
+    // Row 4 — trunk top + G.SH
+    println!("{}", "  ║               \\     /                                            ║".cyan());
+    println!("{}", "  ║         ~~~~~ (     ) ~~~~~     ██████╗     ███████╗██╗  ██╗     ║".cyan());
+    println!("{}", "  ║        ~      |     |      ~   ██╔════╝     ██╔════╝██║  ██║     ║".cyan());
+    println!("{}", "  ║       ~       |     |       ~  ██║  ███╗    ███████╗███████║     ║".white().bold());
+    println!("{}", "  ║       ~  /\\   |     |   /\\  ~  ██║   ██║    ╚════██║██╔══██║     ║".white().bold());
+    println!("{}", "  ║        ~\\  /  |     |  /  /~   ╚██████╔╝    ███████║██║  ██║     ║".white().bold());
+    println!("{}", "  ║         ~~    |     |    ~~      ╚═════╝     ╚══════╝╚═╝  ╚═╝     ║".white().bold());
+    // Row 5 — trunk base
+    println!("{}", "  ║               |     |                                            ║".cyan());
+    println!("{}", "  ║               |     |            句芒  ·  Spirit Messenger       ║".cyan().dimmed());
 
-    // Version + repo footer — VERSION const drives this line
-    println!(
-        "{}",
-        format!("  ║          │░░││░░│           {VERSION}  ·  github.com/paulfxyz       ║")
-            .cyan()
-            .dimmed()
-    );
-    println!(
-        "{}",
-        "  ║          └──┘└──┘                                                ║"
-            .cyan()
-            .dimmed()
-    );
-    println!(
-        "{}",
-        "  ╚══════════════════════════════════════════════════════════════════╝"
-            .cyan()
-            .dimmed()
-    );
+    // Version + footer
+    println!("{}", format!(
+        "  ║               |_____|            {VERSION}  ·  mang.sh                  ║"
+    ).cyan().dimmed());
+    println!("{}", "  ╚══════════════════════════════════════════════════════════════════╝".cyan().dimmed());
 
     println!();
     println!(
         "  {}  {}",
         "◈".cyan().bold(),
-        "Natural language → Terminal commands, powered by AI.".white()
+        "The spirit messenger between you and your shell.".white()
     );
+    println!(
+        "  {}  {}",
+        "◈".cyan().bold(),
+        "Describe what you need. Gou Mang delivers the command.".white()
+    );
+
     if dry_run {
         println!(
             "  {}  {}",
             "◈".yellow().bold(),
-            "DRY-RUN MODE — commands will be shown but never executed."
-                .yellow()
-                .bold()
+            "DRY-RUN MODE — commands will be shown but never executed.".yellow().bold()
         );
     }
+
     println!(
         "  {}  {}",
         "◈".cyan().bold(),
@@ -115,17 +104,13 @@ pub fn print_banner(dry_run: bool) {
 
 // =============================================================================
 //  print_intro
-//
-//  Shown after banner + optional first-run setup, immediately before the
-//  first REPL prompt.  Shows active backend, dry-run status, and feature flags.
 // =============================================================================
 pub fn print_intro(cfg: &Config, dry_run: bool) {
     println!();
 
-    // Backend indicator
     let backend_str = if cfg.backend == "ollama" {
         format!(
-            "Ollama  ({})  model: {}",
+            "Ollama  ({}  model: {})",
             cfg.ollama_url.dimmed(),
             cfg.model.cyan()
         )
@@ -164,12 +149,12 @@ pub fn print_intro(cfg: &Config, dry_run: bool) {
     println!(
         "  {}  {}",
         "◈".cyan().bold(),
-        "Describe what you want to do — I'll suggest the commands.".white()
+        "Describe what you want to do — Mang will suggest the commands.".white()
     );
     println!(
         "  {}  {}",
         "◈".cyan().bold(),
-        "Y to run · N to skip · !help for all shortcuts.".dimmed()
+        "Y to run · N to refine · !help for all shortcuts.".dimmed()
     );
     println!();
 }
@@ -185,7 +170,7 @@ pub fn print_help(cfg: &Config, dry_run: bool, history_enabled: bool, ctx_size: 
     );
     println!(
         "{}",
-        "  ║         🤖  Yo, Rust!  —  Help & Reference          ║"
+        "  ║      句芒  mang.sh  —  Help & Reference             ║"
             .cyan()
             .bold()
     );
@@ -234,40 +219,16 @@ pub fn print_help(cfg: &Config, dry_run: bool, history_enabled: bool, ctx_size: 
     // Examples
     println!("  {}", "EXAMPLES".white().bold());
     let examples: &[(&str, &str)] = &[
-        (
-            "find all .env files in this project",
-            "find . -name \".env\" -type f",
-        ),
-        (
-            "kill whatever is on port 8080",
-            "lsof -ti:8080 | xargs kill -9",
-        ),
-        (
-            "show the 10 biggest files here",
-            "du -ah . | sort -rh | head -n 10",
-        ),
-        (
-            "compress the uploads folder",
-            "tar -czf uploads.tar.gz uploads/",
-        ),
-        (
-            "git log last 5 commits with author",
-            "git log -5 --pretty=format:\"%h %an: %s\"",
-        ),
-        ("list running docker containers", "docker ps"),
-        ("check my public IP",            "curl -s https://ifconfig.me"),
-        (
-            "count lines of Rust code in this project",
-            "find . -name '*.rs' | xargs wc -l | tail -1",
-        ),
-        (
-            "watch nginx error log live",
-            "tail -f /var/log/nginx/error.log",
-        ),
-        (
-            "show files changed in the last 24 hours",
-            "find . -mtime -1 -type f",
-        ),
+        ("find all .env files in this project",      "find . -name \".env\" -type f"),
+        ("kill whatever is on port 8080",            "lsof -ti:8080 | xargs kill -9"),
+        ("show the 10 biggest files here",           "du -ah . | sort -rh | head -n 10"),
+        ("compress the uploads folder",              "tar -czf uploads.tar.gz uploads/"),
+        ("git log last 5 commits with author",       "git log -5 --pretty=format:\"%h %an: %s\""),
+        ("list running docker containers",           "docker ps"),
+        ("check my public IP",                       "curl -s https://ifconfig.me"),
+        ("count lines of Rust code in this project", "find . -name '*.rs' | xargs wc -l | tail -1"),
+        ("watch nginx error log live",               "tail -f /var/log/nginx/error.log"),
+        ("show files changed in the last 24 hours",  "find . -mtime -1 -type f"),
     ];
     for (prompt, cmd) in examples {
         println!("    {}  {}", "yo ›".cyan().bold(), prompt.white());
@@ -277,25 +238,21 @@ pub fn print_help(cfg: &Config, dry_run: bool, history_enabled: bool, ctx_size: 
     // Shortcuts
     println!("  {}", "SHORTCUTS".white().bold());
     let shortcuts: &[(&str, &str)] = &[
-        ("!help  / !h",     "This help screen"),
+        ("!help  / !h",      "This help screen"),
         ("!update / !check", "Check for a new version and offer to install it"),
-        ("!api",            "Update backend, API key, model, history & context settings"),
-        ("!feedback  / !fb",  "Feedback & data sharing — status, setup, on/off"),
-        ("!fb setup",          "Run the full feedback setup wizard"),
-        ("!fb on / !fb off",   "Toggle community sharing instantly"),
-        ("!fb personal",       "Configure your own personal JSONBin"),
-        ("!fb about",          "Explain the data pipeline & JSONBin.io"),
-        ("!shortcuts / !sc",   "List all saved command shortcuts"),
-        ("!save <name>",     "Save last ran commands as !<name> (instant replay)"),
-        ("!forget <name>",   "Delete a saved shortcut"),
-        ("!<name>",          "Run a saved shortcut instantly — no AI, no confirmation"),
-        ("!context / !ctx",  "Show what the AI currently remembers (last N turns)"),
-        ("!clear",           "Clear conversation context — start fresh"),
-        ("!exit  / !q",     "Quit yo-rust"),
-        ("Y / Enter",       "Confirm and run the suggested command(s)"),
-        ("N",               "Skip — rephrase and try again"),
-        ("↑ / ↓",           "Recall previous prompts in this session"),
-        ("Ctrl+D",          "Exit at any time"),
+        ("!api",             "Update backend, API key, model, history & context"),
+        ("!feedback / !fb",  "Telemetry status, opt-in/out, personal JSONBin"),
+        ("!shortcuts / !sc", "List all saved command shortcuts"),
+        ("!save <name>",     "Save last commands as !<name> for instant replay"),
+        ("!forget <name>",   "Remove a saved shortcut"),
+        ("!<name>",          "Run a saved shortcut instantly — no AI, no Y/N"),
+        ("!context / !ctx",  "Show what Gou Mang currently remembers"),
+        ("!clear",           "Clear conversation context — fresh start"),
+        ("!exit  / !q",      "Dismiss Mang for now"),
+        ("Y / Enter",        "Confirm and run"),
+        ("N",                "Refine — describe what to change, Mang adjusts"),
+        ("↑ / ↓",            "Recall previous prompts in this session"),
+        ("Ctrl+D",           "Exit at any time"),
     ];
     for (key, desc) in shortcuts {
         println!(
@@ -322,8 +279,8 @@ pub fn print_help(cfg: &Config, dry_run: bool, history_enabled: bool, ctx_size: 
     );
     println!();
 
-    // Natural-language triggers
-    println!("  {}", "NATURAL LANGUAGE CONFIG TRIGGERS".white().bold());
+    // Natural language triggers
+    println!("  {}", "NATURAL LANGUAGE TRIGGERS".white().bold());
     println!(
         "  {}",
         "  These phrases auto-trigger !api without typing the shortcut:".dimmed()
@@ -340,16 +297,16 @@ pub fn print_help(cfg: &Config, dry_run: bool, history_enabled: bool, ctx_size: 
 
     // Config location
     println!("  {}", "CONFIG FILE".white().bold());
-    println!("    {}  {}", "macOS:  ".dimmed(), "~/Library/Application Support/yo-rust/config.json".yellow());
-    println!("    {}  {}", "Linux:  ".dimmed(), "~/.config/yo-rust/config.json".yellow());
-    println!("    {}  {}", "Windows:".dimmed(), "%APPDATA%\\yo-rust\\config.json".yellow());
+    println!("    {}  {}", "macOS:  ".dimmed(), "~/Library/Application Support/mang-sh/config.json".yellow());
+    println!("    {}  {}", "Linux:  ".dimmed(), "~/.config/mang-sh/config.json".yellow());
+    println!("    {}  {}", "Windows:".dimmed(), "%APPDATA%\\mang-sh\\config.json".yellow());
     println!("    {}", "Plain JSON — editable manually if needed.".dimmed());
     println!();
 
     // Footer
     println!(
-        "  {}  {}  {}  github.com/paulfxyz/yo-rust",
-        "◈".cyan(),
+        "  {}  {}  {}  mang.sh  ·  github.com/paulfxyz/mang-sh",
+        "句芒".cyan(),
         VERSION.dimmed(),
         "·".dimmed()
     );
@@ -367,7 +324,6 @@ pub fn print_suggestion(suggestion: &Suggestion, dry_run: bool) {
         println!();
     }
 
-    // Box width adapts to the longest command (minimum 46 chars inner width)
     let inner_w = suggestion
         .commands
         .iter()
@@ -384,11 +340,8 @@ pub fn print_suggestion(suggestion: &Suggestion, dry_run: bool) {
             let pad = inner_w.saturating_sub(cmd.len() + 5);
             println!(
                 "  {}  {}  {}{}{}",
-                "│".yellow(),
-                "$".dimmed(),
-                cmd.white().bold(),
-                " ".repeat(pad),
-                "│".yellow()
+                "│".yellow(), "$".dimmed(),
+                cmd.white().bold(), " ".repeat(pad), "│".yellow()
             );
         }
         println!("  {}{}{}", "└".yellow(), bar.yellow(), "┘".yellow());
@@ -399,11 +352,8 @@ pub fn print_suggestion(suggestion: &Suggestion, dry_run: bool) {
             let pad = inner_w.saturating_sub(cmd.len() + 5);
             println!(
                 "  {}  {}  {}{}{}",
-                "│".cyan(),
-                "$".dimmed(),
-                cmd.white().bold(),
-                " ".repeat(pad),
-                "│".cyan()
+                "│".cyan(), "$".dimmed(),
+                cmd.white().bold(), " ".repeat(pad), "│".cyan()
             );
         }
         println!("  {}{}{}", "└".cyan(), bar.cyan(), "┘".cyan());
@@ -429,14 +379,14 @@ pub fn print_empty_suggestion(suggestion: &Suggestion) {
 }
 
 // =============================================================================
-//  print_context_summary — show what the AI currently "remembers"
+//  print_context_summary
 // =============================================================================
 pub fn print_context_summary(ctx: &ConversationContext) {
     println!();
     if ctx.is_empty() {
         println!(
             "{}",
-            "  ◈  No context recorded yet — run some commands first.".dimmed()
+            "  ◈  No context yet — Gou Mang is listening from the beginning.".dimmed()
         );
         println!();
         return;
@@ -447,7 +397,7 @@ pub fn print_context_summary(ctx: &ConversationContext) {
     );
     println!(
         "{}",
-        "  ║         Current Conversation Context                ║"
+        "  ║         句芒  Mang's Current Memory                 ║"
             .cyan()
             .bold()
     );
@@ -469,7 +419,7 @@ pub fn print_context_summary(ctx: &ConversationContext) {
         "  {}  {}",
         "◈".cyan(),
         format!(
-            "{} turn(s) in context.  Type !clear to reset.",
+            "{} turn(s) in memory.  Type !clear to start fresh.",
             ctx.len()
         )
         .dimmed()
@@ -478,42 +428,62 @@ pub fn print_context_summary(ctx: &ConversationContext) {
 }
 
 // =============================================================================
-//  print_feedback_status — show current telemetry configuration at a glance
+//  print_feedback_status
 // =============================================================================
 pub fn print_feedback_status(cfg: &crate::config::Config) {
     println!();
-    println!("{}", "  ╔══════════════════════════════════════════════════════╗".cyan());
-    println!("{}", "  ║         📊  Feedback & Data Sharing Status          ║".cyan().bold());
-    println!("{}", "  ╚══════════════════════════════════════════════════════╝".cyan());
+    println!(
+        "{}",
+        "  ╔══════════════════════════════════════════════════════╗".cyan()
+    );
+    println!(
+        "{}",
+        "  ║      📊  Feedback & Data Sharing — Status           ║"
+            .cyan()
+            .bold()
+    );
+    println!(
+        "{}",
+        "  ╚══════════════════════════════════════════════════════╝".cyan()
+    );
     println!();
 
-    // ── Community sharing ─────────────────────────────────────────────────────
     let community_status = if cfg.telemetry_share_central {
-        "ON  — sharing with yo-rust community dataset".green().to_string()
+        "ON  — sharing with mang.sh community dataset".green().to_string()
     } else {
         "OFF — not sharing".dimmed().to_string()
     };
-    println!("  {}  Community sharing:   {}", "◈".cyan().bold(), community_status);
+    println!(
+        "  {}  Community sharing:   {}",
+        "◈".cyan().bold(),
+        community_status
+    );
 
-    // ── Personal JSONBin ──────────────────────────────────────────────────────
     let personal_status = if !cfg.telemetry_user_key.is_empty() {
-        format!("ON  — collection: {}",
+        format!(
+            "ON  — collection: {}",
             if cfg.telemetry_user_collection.is_empty() {
-                "not set (run !feedback to configure)".to_string()
+                "not set (run !feedback personal)".to_string()
             } else {
                 cfg.telemetry_user_collection.clone()
             }
-        ).green().to_string()
+        )
+        .green()
+        .to_string()
     } else {
         "OFF — no personal JSONBin configured".dimmed().to_string()
     };
-    println!("  {}  Personal JSONBin:    {}", "◈".cyan().bold(), personal_status);
+    println!(
+        "  {}  Personal JSONBin:    {}",
+        "◈".cyan().bold(),
+        personal_status
+    );
 
     println!();
     println!("  {}", "WHAT IS COLLECTED  (only when sharing is ON)".white().bold());
     println!("  {}", "  ✓  Your natural-language prompt".dimmed());
     println!("  {}", "  ✓  The commands that ran".dimmed());
-    println!("  {}", "  ✓  OS, shell, AI model, yo-rust version".dimmed());
+    println!("  {}", "  ✓  OS, shell, AI model, mang.sh version".dimmed());
     println!("  {}", "  ✓  Whether it worked (your Y/N feedback)".dimmed());
     println!();
     println!("  {}", "WHAT IS NEVER COLLECTED".white().bold());
@@ -524,48 +494,93 @@ pub fn print_feedback_status(cfg: &crate::config::Config) {
     println!("  {}", "  ✗  Username, hostname, or any identity".dimmed());
     println!();
     println!("  {}", "ACTIONS".white().bold());
-    println!("    {}  Run the full setup wizard", "!feedback setup".yellow().bold());
-    println!("    {}  Toggle community sharing on/off", "!feedback on  /  !feedback off".yellow().bold());
-    println!("    {}  Configure your personal JSONBin", "!feedback personal".yellow().bold());
-    println!("    {}  Clear all telemetry settings", "!feedback clear".yellow().bold());
-    println!("    {}  Learn about JSONBin.io", "!feedback about".yellow().bold());
+    println!(
+        "    {}  Run the full setup wizard",
+        "!feedback setup".yellow().bold()
+    );
+    println!(
+        "    {}  Toggle community sharing on/off",
+        "!feedback on  /  !feedback off".yellow().bold()
+    );
+    println!(
+        "    {}  Configure your personal JSONBin",
+        "!feedback personal".yellow().bold()
+    );
+    println!(
+        "    {}  Send a live test entry and verify receipt",
+        "!feedback test".yellow().bold()
+    );
+    println!(
+        "    {}  Clear all telemetry settings",
+        "!feedback clear".yellow().bold()
+    );
     println!();
-    println!("  {}  {}  {}  https://jsonbin.io",
-        "◈".cyan(), "Personal JSONBin →".dimmed(), "·".dimmed());
+    println!(
+        "  {}  {}  {}  https://jsonbin.io",
+        "◈".cyan(),
+        "Personal JSONBin →".dimmed(),
+        "·".dimmed()
+    );
     println!();
 }
 
 // =============================================================================
-//  print_feedback_about — explain JSONBin and the data pipeline
+//  print_feedback_about
 // =============================================================================
 pub fn print_feedback_about() {
     println!();
-    println!("{}", "  ╔══════════════════════════════════════════════════════╗".cyan());
-    println!("{}", "  ║     📊  About Community Feedback & JSONBin.io       ║".cyan().bold());
-    println!("{}", "  ╚══════════════════════════════════════════════════════╝".cyan());
+    println!(
+        "{}",
+        "  ╔══════════════════════════════════════════════════════╗".cyan()
+    );
+    println!(
+        "{}",
+        "  ║     📊  About Community Feedback & JSONBin.io       ║"
+            .cyan()
+            .bold()
+    );
+    println!(
+        "{}",
+        "  ╚══════════════════════════════════════════════════════╝".cyan()
+    );
     println!();
     println!("  {}", "THE GOAL".white().bold());
-    println!("  {}", "  Every week, Paul Fleury reviews the accumulated data to see which".dimmed());
-    println!("  {}", "  prompts worked, which failed, and which OS/shell combinations need".dimmed());
-    println!("  {}", "  better system prompt rules. This directly improves yo-rust for everyone.".dimmed());
+    println!(
+        "  {}",
+        "  Every week, Paul Fleury reviews the accumulated data to see which".dimmed()
+    );
+    println!(
+        "  {}",
+        "  prompts worked, which failed, and which OS/shell combinations need".dimmed()
+    );
+    println!(
+        "  {}",
+        "  better system prompt rules. This directly improves mang.sh for everyone.".dimmed()
+    );
     println!();
     println!("  {}", "HOW THE DATA FLOWS".white().bold());
-    println!("  {}", "  1. You confirm a command worked (Y at the feedback prompt)".dimmed());
-    println!("  {}", "  2. yo-rust POSTs an anonymised JSON entry to JSONBin.io".dimmed());
-    println!("  {}", "  3. It lands in a private collection only Paul can read".dimmed());
-    println!("  {}", "  4. Paul reviews weekly → improves the system prompt → new release".dimmed());
+    println!(
+        "  {}",
+        "  1. You confirm a command worked (Y at the feedback prompt)".dimmed()
+    );
+    println!(
+        "  {}",
+        "  2. mang.sh POSTs an anonymised JSON entry to JSONBin.io".dimmed()
+    );
+    println!(
+        "  {}",
+        "  3. It lands in a private collection only Paul can read".dimmed()
+    );
+    println!(
+        "  {}",
+        "  4. Paul reviews weekly → improves the system prompt → new release".dimmed()
+    );
     println!();
-    println!("  {}", "JSONBIN.IO".white().bold());
-    println!("  {}", "  JSONBin.io is a simple JSON storage API. yo-rust uses a write-only".dimmed());
-    println!("  {}", "  Access Key — it can create bins but CANNOT read, update, or delete.".dimmed());
-    println!("  {}", "  Your entries are private and cannot be seen by other users.".dimmed());
-    println!();
-    println!("  {}", "YOUR OWN JSONBIN".white().bold());
-    println!("  {}", "  You can optionally store your own command history in your own".dimmed());
-    println!("  {}", "  JSONBin account — completely separate from the community dataset.".dimmed());
-    println!("  {}", "  Only you can read it. Useful for personal analytics.".dimmed());
-    println!();
-    println!("    {}  https://jsonbin.io  (free account, 10,000 requests)", "→".cyan());
-    println!("    {}  Run:  !feedback personal  to configure your own bin", "→".cyan());
+    println!(
+        "  {}  {}  {}  https://jsonbin.io",
+        "◈".cyan(),
+        "Learn more:".dimmed(),
+        "·".dimmed()
+    );
     println!();
 }

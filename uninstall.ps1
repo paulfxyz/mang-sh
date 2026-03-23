@@ -1,16 +1,16 @@
 # =============================================================================
-#  uninstall.ps1 -- Remove yo-rust from Windows (PowerShell)
-#  https://github.com/paulfxyz/yo-rust
+#  uninstall.ps1 -- Remove mang.sh from Windows (PowerShell)
+#  https://github.com/paulfxyz/mang-sh
 #
 #  Usage:
-#    iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.ps1 | iex
+#    iwr -useb https://mang.sh/uninstall.ps1 | iex
 #
 #  What it removes:
 #    - The yo.exe binary (wherever installed)
-#    - yo-rust directory from LOCALAPPDATA (if default install location)
+#    - mang.sh directory from LOCALAPPDATA (if default install location)
 #    - The install directory from $env:PATH (user PATH entry)
 #    - yo / hi / hello aliases from $PROFILE
-#    - Config directory (%APPDATA%\yo-rust) -- ASKS before deleting
+#    - Config directory (%APPDATA%\mang-sh) -- ASKS before deleting
 #
 #  What it keeps:
 #    - Rust / rustup (you may use it for other projects)
@@ -37,15 +37,15 @@ function Ask-YesNo {
 
 Write-Host ""
 Write-Host "  +==========================================+" -ForegroundColor Cyan
-Write-Host "  |       Uninstalling  Yo, Rust!           |" -ForegroundColor Cyan
+Write-Host "  |       Uninstalling  mang.sh           |" -ForegroundColor Cyan
 Write-Host "  +==========================================+" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  This will remove yo-rust from your system." -ForegroundColor DarkGray
+Write-Host "  This will remove mang.sh from your system." -ForegroundColor DarkGray
 Write-Host "  Your API key will be kept unless you say otherwise." -ForegroundColor DarkGray
 Write-Host ""
 
 # -- Confirm ------------------------------------------------------------------
-if (-not (Ask-YesNo "Are you sure you want to uninstall yo-rust?" $true)) {
+if (-not (Ask-YesNo "Are you sure you want to uninstall mang.sh?" $true)) {
     Write-Host ""
     Write-Host "  Cancelled. Nothing was changed." -ForegroundColor DarkGray
     Write-Host ""
@@ -60,7 +60,7 @@ $YoBinPath = $null
 if ($YoBin) {
     $YoBinPath = $YoBin.Source
 } else {
-    $DefaultPath = Join-Path $env:LOCALAPPDATA "yo-rust\bin\yo.exe"
+    $DefaultPath = Join-Path $env:LOCALAPPDATA "mang-sh\bin\yo.exe"
     if (Test-Path $DefaultPath) { $YoBinPath = $DefaultPath }
 }
 
@@ -70,10 +70,10 @@ if ($YoBinPath -and (Test-Path $YoBinPath)) {
     Log-OK "Removed binary: $YoBinPath"
 
     # Remove the empty install directory if it was our default location
-    $DefaultInstallDir = Join-Path $env:LOCALAPPDATA "yo-rust\bin"
+    $DefaultInstallDir = Join-Path $env:LOCALAPPDATA "mang-sh\bin"
     if ($InstallDir -eq $DefaultInstallDir) {
-        Remove-Item (Join-Path $env:LOCALAPPDATA "yo-rust") -Recurse -Force -ErrorAction SilentlyContinue
-        Log-OK "Removed install directory: $(Join-Path $env:LOCALAPPDATA 'yo-rust')"
+        Remove-Item (Join-Path $env:LOCALAPPDATA "mang.sh") -Recurse -Force -ErrorAction SilentlyContinue
+        Log-OK "Removed install directory: $(Join-Path $env:LOCALAPPDATA 'mang.sh')"
     }
 
     # Remove from user PATH
@@ -89,7 +89,7 @@ if ($YoBinPath -and (Test-Path $YoBinPath)) {
 
 # -- Step 2: Remove config (ask first) ----------------------------------------
 Write-Host ""
-$ConfigDir = Join-Path $env:APPDATA "yo-rust"
+$ConfigDir = Join-Path $env:APPDATA "mang.sh"
 if (Test-Path $ConfigDir) {
     Log-Warn "Config found: $ConfigDir"
     Write-Host "      Contains your OpenRouter API key and preferences." -ForegroundColor DarkGray
@@ -109,13 +109,13 @@ if (Test-Path $ConfigDir) {
 Write-Host ""
 if ($PROFILE -and (Test-Path $PROFILE)) {
     $Content = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue
-    if ($Content -like "*yo-rust aliases*") {
+    if ($Content -like "*mang.sh aliases*") {
         # Remove the alias block — everything between the comment and end of aliases
-        $Cleaned = $Content -replace '(?ms)\r?\n# yo-rust aliases.*?Set-Alias -Name hello.*?\r?\n', "`n"
+        $Cleaned = $Content -replace '(?ms)\r?\n# mang.sh aliases.*?Set-Alias -Name hello.*?\r?\n', "`n"
         Set-Content $PROFILE $Cleaned.TrimEnd() -NoNewline
-        Log-OK "Removed yo-rust aliases from $PROFILE"
+        Log-OK "Removed mang.sh aliases from $PROFILE"
     } else {
-        Log-Skip "No yo-rust aliases found in $PROFILE"
+        Log-Skip "No mang.sh aliases found in $PROFILE"
     }
 } else {
     Log-Skip "No PowerShell profile found."
@@ -127,10 +127,10 @@ Write-Host "  +==========================================+" -ForegroundColor Cya
 Write-Host "  |          Uninstall complete!            |" -ForegroundColor Cyan
 Write-Host "  +==========================================+" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  yo-rust has been removed."
+Write-Host "  mang.sh has been removed. 句芒"
 Write-Host "  Rust itself was NOT removed." -ForegroundColor DarkGray
 Write-Host "  To remove Rust: rustup self uninstall" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  To reinstall:" -ForegroundColor DarkGray
-Write-Host "  iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/install.ps1 | iex" -ForegroundColor DarkGray
+Write-Host "  iwr -useb https://mang.sh/install.ps1 | iex" -ForegroundColor DarkGray
 Write-Host ""

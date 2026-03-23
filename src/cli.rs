@@ -1,10 +1,10 @@
 // =============================================================================
 //  cli.rs — Command-line argument parsing
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────
-//  yo-rust is primarily an interactive REPL, but accepts a small set of flags
+//  mang.sh is primarily an interactive REPL, but accepts a small set of flags
 //  that modify its behaviour for the current session.  All flags are optional;
 //  the default behaviour (no flags) is identical to v1.x.
 //
@@ -12,7 +12,7 @@
 //  ─────
 //  --dry / -d
 //    Dry-run mode: show the suggested commands but NEVER execute them.
-//    Useful for previewing what yo-rust would do, or for piping output to
+//    Useful for previewing what mang.sh would do, or for piping output to
 //    another tool without any side effects.
 //    The Y/N prompt is replaced with "[dry-run — not executed]".
 //
@@ -24,7 +24,7 @@
 //
 //  --no-context
 //    Disable multi-turn context for this session only.
-//    By default, yo-rust remembers the last N (config.context_size) commands
+//    By default, mang.sh remembers the last N (config.context_size) commands
 //    and includes them in each new request, enabling follow-up prompts like
 //    "now do the same for the other folder".
 //    Use this flag for a stateless session.
@@ -40,14 +40,14 @@
 
 use clap::Parser;
 
-/// yo-rust — Natural language terminal assistant.
+/// mang.sh — Natural language terminal assistant.
 ///
 /// Type `yo` and describe what you want to do in plain English.
-/// yo-rust will suggest shell commands and ask for confirmation before running anything.
+/// mang.sh will suggest shell commands and ask for confirmation before running anything.
 #[derive(Parser, Debug)]
 #[command(
-    name    = "yo",
-    version = "2.3.5",
+    name    = "mang.sh",
+    version = "3.0.0",
     about   = "Natural language terminal assistant powered by AI.",
     long_about = None,
 )]

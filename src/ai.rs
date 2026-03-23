@@ -1,10 +1,10 @@
 // =============================================================================
 //  ai.rs — AI backend integration (OpenRouter + Ollama)
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────
-//  This module is the only place in yo-rust that touches the network.
+//  This module is the only place in mang.sh that touches the network.
 //  It abstracts over two backends behind a single public function:
 //
 //    suggest_commands(cfg, history_ctx, prompt) → Result<Suggestion>
@@ -199,7 +199,7 @@ struct OllamaResponseMessage {
 //    - Rule 7 provides a clean escape hatch for non-shell requests so the
 //      empty-commands case is handled gracefully in ui.rs
 // =============================================================================
-const SYSTEM_PROMPT: &str = r#"You are yo-rust, a terminal assistant that converts natural language requests into shell commands.
+const SYSTEM_PROMPT: &str = r#"You are mang.sh, a terminal assistant that converts natural language requests into shell commands.
 
 RULES:
 1. Reply ONLY with a valid JSON object — no prose, no markdown fences, no preamble.
@@ -304,8 +304,8 @@ fn suggest_openrouter(
         .post("https://openrouter.ai/api/v1/chat/completions")
         .header("Authorization",  format!("Bearer {}", cfg.api_key))
         .header("Content-Type",   "application/json")
-        .header("HTTP-Referer",   "https://github.com/paulfxyz/yo-rust")
-        .header("X-Title",        "yo-rust")
+        .header("HTTP-Referer",   "https://github.com/paulfxyz/mang-sh")
+        .header("X-Title",        "mang.sh")
         .json(&body)
         .send()?;
 

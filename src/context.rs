@@ -1,6 +1,6 @@
 // =============================================================================
 //  context.rs — Multi-turn conversation context
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────

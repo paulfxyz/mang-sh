@@ -1,9 +1,9 @@
 # =============================================================================
-#  update.ps1 -- Update yo-rust to the latest version (Windows / PowerShell)
-#  https://github.com/paulfxyz/yo-rust
+#  update.ps1 -- Update mang.sh to the latest version (Windows / PowerShell)
+#  https://github.com/paulfxyz/mang-sh
 #
 #  Usage:
-#    iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.ps1 | iex
+#    iwr -useb https://mang.sh/update.ps1 | iex
 #
 #  See install.ps1 for the detailed explanation of why we do NOT use
 #  $ErrorActionPreference = "Stop" and why we check $LASTEXITCODE instead.
@@ -17,18 +17,18 @@ function Write-Warn { param($msg) Write-Host "  [!!] $msg" -ForegroundColor Yell
 function Write-Fail {
     param($msg)
     Write-Host "  [!!] $msg" -ForegroundColor Red
-    Write-Host "  https://github.com/paulfxyz/yo-rust/issues" -ForegroundColor DarkGray
+    Write-Host "  https://github.com/paulfxyz/mang-sh/issues" -ForegroundColor DarkGray
     Write-Host ""
     exit 1
 }
 
-$RAW_BASE = "https://raw.githubusercontent.com/paulfxyz/yo-rust/main"
-$ZIP_URL  = "https://github.com/paulfxyz/yo-rust/archive/refs/heads/main.zip"
-$TMP_DIR  = Join-Path $env:TEMP ("yo-rust-update-" + [System.Guid]::NewGuid().ToString("N").Substring(0,8))
+$RAW_BASE = "https://mang.sh"
+$ZIP_URL = "https://github.com/paulfxyz/mang-sh/archive/refs/heads/main.zip"
+$TMP_DIR  = Join-Path $env:TEMP ("mang-sh-update-" + [System.Guid]::NewGuid().ToString("N").Substring(0,8))
 
 Write-Host ""
 Write-Host "  +==========================================+" -ForegroundColor Cyan
-Write-Host "  |          Updating  Yo, Rust!            |" -ForegroundColor Cyan
+Write-Host "  |          Updating  mang.sh            |" -ForegroundColor Cyan
 Write-Host "  +==========================================+" -ForegroundColor Cyan
 Write-Host ""
 
@@ -42,12 +42,12 @@ $YoBinPath = $null
 if ($YoBin) {
     $YoBinPath = $YoBin.Source
 } else {
-    $Default = Join-Path $env:LOCALAPPDATA "yo-rust\bin\yo.exe"
+    $Default = Join-Path $env:LOCALAPPDATA "mang-sh\bin\yo.exe"
     if (Test-Path $Default) { $YoBinPath = $Default }
 }
 
 if (-not $YoBinPath) {
-    Write-Warn "yo-rust does not appear to be installed."
+    Write-Warn "mang.sh does not appear to be installed."
     Write-Host "      Install first: iwr -useb $RAW_BASE/install.ps1 | iex" -ForegroundColor DarkGray
     exit 1
 }
@@ -96,7 +96,7 @@ if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
 New-Item -ItemType Directory -Force -Path $TMP_DIR | Out-Null
 Write-Info "Downloading latest source..."
 
-$ZipDest = Join-Path $TMP_DIR "yo-rust.zip"
+$ZipDest = Join-Path $TMP_DIR "mang-sh.zip"
 try {
     $WebClient = New-Object System.Net.WebClient
     $WebClient.DownloadFile($ZIP_URL, $ZipDest)
@@ -107,7 +107,7 @@ try {
 Expand-Archive -Path $ZipDest -DestinationPath $TMP_DIR -Force
 Remove-Item $ZipDest -Force -ErrorAction SilentlyContinue
 
-$SrcDir = Join-Path $TMP_DIR "yo-rust-main"
+$SrcDir = Join-Path $TMP_DIR "mang-sh-main"
 if (-not (Test-Path $SrcDir)) {
     $SrcDir = (Get-ChildItem $TMP_DIR -Directory | Select-Object -First 1).FullName
 }
@@ -144,6 +144,6 @@ Write-Host "  +==========================================+" -ForegroundColor Cya
 Write-Host "  |           Update complete!              |" -ForegroundColor Cyan
 Write-Host "  +==========================================+" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "  yo-rust v$LatestVersion is ready." -ForegroundColor Green
+Write-Host "  mang.sh v$LatestVersion is ready." -ForegroundColor Green
 Write-Host "  Your config was not changed." -ForegroundColor DarkGray
 Write-Host ""

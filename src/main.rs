@@ -1,11 +1,11 @@
 // =============================================================================
-//  main.rs — yo-rust v2.0.0 entry point
-//  https://github.com/paulfxyz/yo-rust
+//  main.rs — mang.sh v3.0.0 entry point
+//  https://mang.sh
 //
 //  OVERVIEW
 //  ────────
-//  yo-rust is a natural-language terminal assistant.  The user describes what
-//  they want to do; an AI translates it to shell commands; yo-rust shows them,
+//  mang.sh is a natural-language terminal assistant.  The user describes what
+//  they want to do; an AI translates it to shell commands; mang.sh shows them,
 //  asks for confirmation, runs them, appends them to shell history, and
 //  remembers the last N turns for follow-up context.
 //
@@ -27,7 +27,7 @@
 //  MODULE GRAPH
 //  ────────────
 //  main ──► cli      (clap argument parsing: --dry, --no-history, --no-context)
-//       ──► config   (load/save ~/.config/yo-rust/config.json)
+//       ──► config   (load/save ~/.config/mang-sh/config.json)
 //       ──► ai       (OpenRouter + Ollama HTTP calls, intent detection)
 //       ──► context  (rolling window of prior turns for follow-up support)
 //       ──► history  (append confirmed commands to shell history file)
@@ -117,7 +117,7 @@ fn main() {
     // We use a background thread so startup latency is zero — the check completes
     // while the user is reading the banner and typing their first prompt.
     //
-    // Rate-limited to once per 24 hours (stored in ~/.config/yo-rust/last_update_check).
+    // Rate-limited to once per 24 hours (stored in ~/.config/mang-sh/last_update_check).
     // The result is collected before the first REPL prompt is shown.
     let update_check_handle = std::thread::spawn(|| {
         updater::check_for_update(false)
@@ -135,7 +135,7 @@ fn main() {
             println!(
                 "\n  {}  {}",
                 "◈".cyan().bold(),
-                "Tip: yo-rust can share anonymised command data to help improve the tool.".white()
+                "Tip: mang.sh can share anonymised command data to help improve the tool.".white()
             );
             println!(
                 "  {}  {}",
@@ -282,7 +282,7 @@ fn main() {
                             if let Err(e) = updater::run_update() {
                                 eprintln!("{}", format!("  ✗  {e}").red());
                             } else {
-                                // Update script ran — exit yo-rust so user restarts fresh
+                                // Update script ran — exit mang.sh so user restarts fresh
                                 for h in pending_telemetry { let _ = h.join(); }
                                 return;
                             }

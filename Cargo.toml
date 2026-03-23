@@ -1,13 +1,13 @@
 [package]
-name        = "yo-rust"
-version     = "2.3.5"
+name        = "mang-sh"
+version     = "3.0.0"
 edition     = "2021"
 authors     = ["Paul Fleury <hello@paulfleury.com>"]
-description = "Natural language terminal assistant — OpenRouter, Ollama, dry-run, shell history, multi-turn context."
+description = "mang.sh — The spirit messenger. Natural language → terminal commands. Powered by Gou Mang (句芒)."
 license     = "MIT"
-repository  = "https://github.com/paulfxyz/yo-rust"
-homepage    = "https://github.com/paulfxyz/yo-rust"
-keywords    = ["cli", "ai", "shell", "terminal", "openrouter"]
+repository  = "https://github.com/paulfxyz/mang-sh"
+homepage    = "https://mang.sh"
+keywords    = ["cli", "ai", "shell", "terminal", "mang"]
 categories  = ["command-line-utilities"]
 
 # ── Binary entry point ────────────────────────────────────────────────────────
@@ -20,7 +20,7 @@ path = "src/main.rs"
 [dependencies]
 
 # reqwest — blocking HTTP client for OpenRouter and Ollama API calls.
-# We use `blocking` deliberately: yo-rust makes one outbound request per user
+# We use `blocking` deliberately: mang.sh makes one outbound request per user
 # turn with several seconds of human think-time between turns.  Adding an async
 # runtime (tokio) would triple compile time and binary size for zero benefit.
 # `json` feature: enables `.json(&body)` / `.json::<T>()` on request/response.

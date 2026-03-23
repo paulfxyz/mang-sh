@@ -1,49 +1,51 @@
-# Installation Guide — Yo, Rust!
+# 📦 Installation Guide — mang.sh 句芒
 
 > **Quick reference**
 > ```bash
 > # Install
-> curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
+> curl -fsSL https://mang.sh/install | bash        # macOS / Linux
+> iwr -useb https://mang.sh/install.ps1 | iex       # Windows PowerShell
 >
 > # Update
-> curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.sh | bash
+> curl -fsSL https://mang.sh/update | bash
+> iwr -useb https://mang.sh/update.ps1 | iex
 >
 > # Uninstall
-> curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.sh | bash
+> curl -fsSL https://mang.sh/uninstall | bash
+> iwr -useb https://mang.sh/uninstall.ps1 | iex
 > ```
 
 ---
 
 ## macOS / Linux — Install
 
-### Option A — One-command (recommended)
-
-Installs Rust automatically if you don't have it.
+### Option A — One command (recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
+curl -fsSL https://mang.sh/install | bash
 ```
 
-Reload your shell:
+Installs Rust automatically if you don't have it. Reload your shell after:
+
 ```bash
 source ~/.zshrc    # zsh
 source ~/.bashrc   # bash
 ```
 
-Then: `yo`
+Then type `yo` to summon the spirit messenger.
 
 ---
 
-### Option B — Manual build
+### Option B — Manual build from source
 
 ```bash
-# Install Rust
+# Install Rust (if needed)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source "$HOME/.cargo/env"
 
 # Clone and build
-git clone https://github.com/paulfxyz/yo-rust
-cd yo-rust
+git clone https://github.com/paulfxyz/mang-sh
+cd mang-sh
 cargo build --release
 
 # Install
@@ -58,153 +60,109 @@ echo "alias hello='yo'" >> ~/.zshrc
 
 ## Windows — Install
 
-> ⚠️ **Before you try anything:** On Windows, `curl` in PowerShell is an alias for
-> `Invoke-WebRequest`, not the real curl binary. It does **not** accept `-fsSL` flags.
-> The Unix install command `curl -fsSL ... | bash` **will fail** in PowerShell.
-> Use the options below.
+> ⚠️ **Important:** On Windows, `curl` in PowerShell is an alias for `Invoke-WebRequest`. It does **not** accept `-fsSL` flags. The Unix command `curl -fsSL ... | bash` will fail in PowerShell. Use the options below.
 
-### Option A — PowerShell native installer ✨ recommended
-
-Open any PowerShell window (Win+X → Windows PowerShell or Terminal) and run:
+### Option A — PowerShell native (recommended)
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/install.ps1 | iex
+iwr -useb https://mang.sh/install.ps1 | iex
 ```
 
-This script:
-- Installs Rust via `rustup-init.exe` if Rust is not found
-- Downloads the latest source ZIP from GitHub
-- Builds a release binary with `cargo build --release`
-- Installs `yo.exe` to `%LOCALAPPDATA%\yo-rust\bin\`
-- Adds that directory to your user `%PATH%`
-- Adds `yo`, `hi`, `hello` aliases to your PowerShell `$PROFILE`
+Works in PowerShell 5 and 7. No Git Bash, no WSL needed. Installs Rust automatically, builds mang.sh, sets up PATH and `yo`/`hi`/`hello` aliases in `$PROFILE`.
 
-Works in PowerShell 5 (built-in Windows PowerShell) and PowerShell 7 (pwsh). No Git Bash, no WSL needed.
-
-If you get a script execution policy error:
+If you get an execution policy error:
 ```powershell
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-**Update:**
-```powershell
-iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.ps1 | iex
-```
-
-**Uninstall:**
-```powershell
-iwr -useb https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.ps1 | iex
-```
-
----
-
 ### Option B — Git Bash
 
-Install [Git for Windows](https://git-scm.com/download/win) which includes Git Bash,
-then open Git Bash and run:
+Install [Git for Windows](https://git-scm.com/download/win), open Git Bash:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
+curl -fsSL https://mang.sh/install | bash
 ```
-
-yo-rust detects Git Bash and generates POSIX-compatible commands.
-
----
 
 ### Option C — WSL2
 
-Inside a WSL2 terminal (Ubuntu, Debian, etc.) — identical to Linux:
+Inside a WSL2 terminal — identical to Linux:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/yo.sh | bash
+curl -fsSL https://mang.sh/install | bash
 ```
-
-yo-rust detects your WSL shell (bash/zsh) and generates Linux commands.
 
 ---
 
 ## First launch
 
-On first run, yo-rust asks:
+On first run, mang.sh asks for:
 
-1. **AI Backend** — OpenRouter (cloud, any model) or Ollama (local, private)
+1. **AI Backend** — OpenRouter (cloud) or Ollama (local, private)
 2. **API key** (OpenRouter only) — get one at [openrouter.ai/keys](https://openrouter.ai/keys)
-3. **Model** — pick from the list or paste any slug
+3. **Model** — press Enter for `openai/gpt-4o-mini` (default) or pick from the list
 4. **Shell history** — whether to append confirmed commands to your history file
-5. **Context size** — how many recent turns to remember for follow-up prompts (default: 5)
+5. **Context size** — how many prior turns to remember for follow-up prompts (default 5)
 
-Config is saved to:
-- macOS: `~/Library/Application Support/yo-rust/config.json`
-- Linux: `~/.config/yo-rust/config.json`
-- Windows: `%APPDATA%\yo-rust\config.json`
+Config saved to:
+- macOS: `~/Library/Application Support/mang-sh/config.json`
+- Linux: `~/.config/mang-sh/config.json`
+- Windows: `%APPDATA%\mang-sh\config.json`
 
 ---
 
-## Ollama setup
-
-To use Ollama (local, private, offline):
+## Ollama (local, private, offline)
 
 ```bash
 # Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh     # macOS / Linux
-# Windows: download from https://ollama.ai/download
+curl -fsSL https://ollama.ai/install.sh | sh
 
 # Pull a model
-ollama pull llama3.2       # recommended general-purpose
-ollama pull mistral        # fast, good at commands
-ollama pull codellama      # code-focused sessions
+ollama pull llama3.2
 
-# Launch yo-rust
+# Launch mang.sh — choose Ollama during setup
 yo
-# Choose backend: 2) Ollama
 ```
 
-Or switch to Ollama from within a session:
-```
-yo ›  use ollama
-```
+Or switch from within a session: `yo ›  use ollama`
 
 ---
 
 ## Update
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.sh | bash
+curl -fsSL https://mang.sh/update | bash             # macOS/Linux
+iwr -useb https://mang.sh/update.ps1 | iex            # Windows PS
 ```
 
-Detects your installed version, checks latest on GitHub, skips if already current.
-Never touches your config or aliases.
+Or from within mang.sh: `!update`
+
+Detects installed version, checks latest, skips if current, replaces binary in-place. Config never touched.
 
 ---
 
 ## Uninstall
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/uninstall.sh | bash
+curl -fsSL https://mang.sh/uninstall | bash           # macOS/Linux
+iwr -useb https://mang.sh/uninstall.ps1 | iex         # Windows PS
 ```
 
-Removes binary, optionally removes config (asks first), cleans alias block from shell rc.
-All prompts read from `/dev/tty` — works correctly whether piped or run directly.
+Removes binary, asks before deleting config, cleans alias block from shell rc.
 
 ### Manual uninstall
 
 ```bash
-# Remove binary
 sudo rm -f /usr/local/bin/yo
-rm -f ~/.local/bin/yo              # if installed to user-local fallback
+rm -f ~/.local/bin/yo
 
-# Remove config (optional — contains your API key)
-rm -rf ~/.config/yo-rust           # Linux
-rm -rf ~/Library/Application\ Support/yo-rust   # macOS
+# Config (optional — contains your API key)
+rm -rf ~/.config/mang-sh
+rm -rf ~/Library/Application\ Support/mang-sh   # macOS
 
-# Remove aliases
-# Open ~/.zshrc or ~/.bashrc and delete the yo-rust aliases block
+# Aliases — open ~/.zshrc or ~/.bashrc and delete the mang.sh aliases block
 ```
 
-To also remove Rust:
-```bash
-rustup self uninstall
-```
+To also remove Rust: `rustup self uninstall`
 
 ---
 
@@ -212,16 +170,14 @@ rustup self uninstall
 
 | Problem | Solution |
 |---|---|
-| `curl -fsSL` fails in PowerShell | Use `iwr -useb ./install.ps1 | iex` instead. PowerShell's `curl` is an alias for `Invoke-WebRequest` and does not accept `-fsSL` flags. |
+| `curl -fsSL` fails in PowerShell | Use `iwr -useb https://mang.sh/install.ps1 \| iex` — PowerShell's `curl` is `Invoke-WebRequest` and doesn't accept `-fsSL` |
 | `yo: command not found` | Run `source ~/.zshrc`. Check `/usr/local/bin` is in `$PATH`. |
-| `OpenRouter returned 401` | API key invalid. Type `!api` inside yo-rust to update it. |
-| `Build failed: error[E0...]` | Run `rustup update stable` to update your toolchain. |
-| `hi` / `hello` not working | Run `source ~/.zshrc` to reload aliases. |
-| Model returns no commands | Try `!api` to switch to a different model. Free-tier models may hit rate limits. |
-| Stuck on "Thinking..." > 30 s | Check connection. For Ollama: is `ollama serve` running? |
-| Ollama 404 or connection refused | Run `ollama serve` in another terminal. Check your `ollama_url` in config. |
-| Wrong shell syntax on Windows | yo-rust auto-detects PS5/PS7/cmd. If wrong, type `!api` to reconfigure. |
-| Uninstall prompt accepts nothing | Script reads from `/dev/tty`. Run in an interactive terminal, not inside another pipe. |
+| `OpenRouter returned 401` | API key invalid — type `!api` inside mang.sh to update it |
+| Build failed `error[E0...]` | `rustup update stable` |
+| `hi` / `hello` not working | `source ~/.zshrc` |
+| Model returns no commands | Try `!api` to switch models. Free-tier models may hit rate limits |
+| Stuck on "Thinking..." | Check connection. For Ollama: is `ollama serve` running? |
+| Wrong syntax on Windows | mang.sh auto-detects PS5/PS7/cmd. If wrong, type `!api` |
 
 ---
 
@@ -229,13 +185,12 @@ rustup self uninstall
 
 | Platform | Status |
 |---|---|
-| macOS — Apple Silicon (arm64) | Fully supported |
-| macOS — Intel (x86_64) | Fully supported |
-| Linux — x86_64 | Fully supported |
-| Linux — ARM / Raspberry Pi | Fully supported |
-| Windows — Git Bash | Fully supported |
-| Windows — WSL2 | Fully supported |
-| Windows — PowerShell 5 | Supported (auto-detected, syntax adapted) |
-| Windows — PowerShell 7 | Supported (auto-detected, syntax adapted) |
-| Windows — cmd.exe | Supported (auto-detected) |
-| Windows — native build (no Git Bash / WSL) | Manual build required |
+| macOS — Apple Silicon (arm64) | ✅ Fully supported |
+| macOS — Intel (x86_64) | ✅ Fully supported |
+| Linux — x86_64 | ✅ Fully supported |
+| Linux — ARM / Raspberry Pi | ✅ Fully supported |
+| Windows — Git Bash | ✅ Fully supported |
+| Windows — WSL2 | ✅ Fully supported |
+| Windows — PowerShell 5 | ✅ Supported (auto-detected, syntax adapted) |
+| Windows — PowerShell 7 | ✅ Supported (auto-detected) |
+| Windows — cmd.exe | ✅ Supported (auto-detected) |

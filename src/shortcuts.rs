@@ -1,6 +1,6 @@
 // =============================================================================
 //  shortcuts.rs — Named command shortcuts (user feature request)
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────
@@ -26,8 +26,8 @@
 //  SHORTCUTS STORAGE
 //  ─────────────────
 //  Shortcuts are persisted to disk at:
-//    macOS/Linux: ~/.config/yo-rust/shortcuts.json
-//    Windows:     %APPDATA%\yo-rust\shortcuts.json
+//    macOS/Linux: ~/.config/mang-sh/shortcuts.json
+//    Windows:     %APPDATA%\mang.sh\shortcuts.json
 //
 //  Format: a flat JSON map of  shortcut_name → [cmd1, cmd2, ...]
 //  Example:
@@ -261,7 +261,7 @@ pub fn parse_shortcut_input(line: &str) -> ShortcutInput {
 /// Returns the path to the shortcuts JSON file.
 fn shortcuts_path() -> PathBuf {
     let base = dirs::config_dir().unwrap_or_else(|| PathBuf::from("."));
-    base.join("yo-rust").join("shortcuts.json")
+    base.join("mang.sh").join("shortcuts.json")
 }
 
 /// Normalise and validate a shortcut name.

@@ -1,10 +1,10 @@
 // =============================================================================
 //  updater.rs — Background update check & !update shortcut
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────
-//  On every launch, yo-rust silently checks GitHub for a newer version.
+//  On every launch, mang.sh silently checks GitHub for a newer version.
 //  The check runs in a background thread so startup latency is zero.
 //  If a newer version is found, the user sees a one-liner notification
 //  AFTER the banner (before the first prompt) and is offered Y/N to update.
@@ -15,11 +15,11 @@
 //
 //  WHAT HAPPENS ON Y
 //  ──────────────────
-//  yo-rust shells out to:
-//    curl -fsSL https://raw.githubusercontent.com/paulfxyz/yo-rust/main/update.sh | bash
+//  mang.sh shells out to:
+//    curl -fsSL https://raw.githubusercontent.com/paulfxyz/mang-sh/main/update.sh | bash
 //  on Unix, or the equivalent iwr/iex on Windows PowerShell.
 //  The update script rebuilds and replaces the binary in-place, then exits.
-//  yo-rust itself exits after launching the update so the user restarts fresh.
+//  mang.sh itself exits after launching the update so the user restarts fresh.
 //
 //  SHORTCUTS
 //  ─────────
@@ -29,7 +29,7 @@
 //  RATE LIMITING
 //  ─────────────
 //  We store the last-check timestamp in:
-//    ~/.config/yo-rust/last_update_check
+//    ~/.config/mang-sh/last_update_check
 //  (a simple Unix timestamp file — one integer, no JSON parsing needed)
 //  If the file is fresh (< 24 hours old), the background check is skipped.
 //  The !update / !check shortcuts always force a fresh check regardless.
@@ -40,7 +40,7 @@ use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 const CHECK_INTERVAL_SECS: u64 = 86_400; // 24 hours
-const RAW_BASE: &str = "https://raw.githubusercontent.com/paulfxyz/yo-rust/main";
+const RAW_BASE: &str = "https://raw.githubusercontent.com/paulfxyz/mang-sh/main";
 
 /// Result of an update check.
 #[derive(Debug)]
@@ -80,7 +80,7 @@ pub fn check_for_update(force: bool) -> UpdateStatus {
         Err(_) => return UpdateStatus::Unavailable,
     };
 
-    let resp = match client.get(format!("{RAW_BASE}/Cargo.toml")).send() {
+    let resp = match client.get("https://raw.githubusercontent.com/paulfxyz/mang-sh/main/Cargo.toml").send() {
         Ok(r) => r,
         Err(_) => return UpdateStatus::Unavailable,
     };
@@ -134,7 +134,7 @@ fn record_check_time() {
 fn last_check_path() -> PathBuf {
     dirs::config_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join("yo-rust")
+        .join("mang.sh")
         .join("last_update_check")
 }
 
@@ -165,7 +165,7 @@ pub fn print_update_notice(new_version: &str) {
 //  run_update — shell out to the update script
 // =============================================================================
 
-/// Invoke the platform-appropriate update script and exit yo-rust.
+/// Invoke the platform-appropriate update script and exit mang.sh.
 ///
 /// On Unix: pipes update.sh through bash via `sh -c`.
 /// On Windows PowerShell: uses iwr | iex.

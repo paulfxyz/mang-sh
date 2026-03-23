@@ -1,6 +1,6 @@
 // =============================================================================
 //  feedback.rs — !feedback / !fb shortcut handler
-//  https://github.com/paulfxyz/yo-rust
+//  https://github.com/paulfxyz/mang-sh
 //
 //  OVERVIEW
 //  ────────
@@ -88,7 +88,7 @@ pub fn dispatch(cmd: FeedbackCommand, cfg: &mut Config) -> bool {
             cfg.sessions_since_telemetry_prompt = 0;
             println!("{}", "  ✔  Community sharing: ON".green().bold());
             println!("  {}  {}", "◈".cyan(),
-                "Your successful commands will be anonymously shared to improve yo-rust.".dimmed());
+                "Your successful commands will be anonymously shared to improve mang.sh.".dimmed());
             println!("  {}  {}", "◈".cyan(), "Type !feedback off to disable at any time.".dimmed());
             println!();
             true
@@ -143,7 +143,7 @@ fn run_setup_wizard(cfg: &mut Config) -> bool {
     println!(
         "  {}  {}",
         "◈".cyan().bold(),
-        "yo-rust can share anonymised data to help improve future versions.".white()
+        "mang.sh can share anonymised data to help improve future versions.".white()
     );
     println!(
         "  {}  {}",
@@ -154,7 +154,7 @@ fn run_setup_wizard(cfg: &mut Config) -> bool {
 
     // ── Step 1: Community sharing ─────────────────────────────────────────────
     println!("  {}", "STEP 1 — Community sharing".white().bold());
-    println!("  {}", "  Share anonymised prompt/command pairs with the yo-rust community".dimmed());
+    println!("  {}", "  Share anonymised prompt/command pairs with the mang.sh community".dimmed());
     println!("  {}", "  dataset? Data goes to a private JSONBin collection reviewed weekly".dimmed());
     println!("  {}", "  by the maintainer to improve the AI system prompt.".dimmed());
     println!();
@@ -221,7 +221,7 @@ fn run_personal_wizard(cfg: &mut Config) -> bool {
     println!("  {}", "Personal JSONBin Setup".white().bold());
     println!("  {}", "  1. Create a free account at https://jsonbin.io".dimmed());
     println!("  {}", "  2. Copy your Master Key from the API Keys page".dimmed());
-    println!("  {}", "  3. Create a Collection named e.g. 'my-yo-rust-history'".dimmed());
+    println!("  {}", "  3. Create a Collection named e.g. 'my-mang.sh-history'".dimmed());
     println!("  {}", "  4. Paste the Master Key and Collection ID below".dimmed());
     println!();
 
@@ -302,9 +302,9 @@ fn test_personal_bin(master_key: &str, collection_id: &str) -> Result<String, St
         .header("Content-Type", "application/json")
         .header("X-Master-Key", master_key)
         .header("X-Bin-Private", "true")
-        .header("X-Bin-Name", "yo-rust-connection-test")
+        .header("X-Bin-Name", "mang.sh-connection-test")
         .header("X-Collection-Id", collection_id)
-        .body(r#"{"yo_rust":"connection_test"}"#)
+        .body(r#"{"mang_sh":"connection_test"}"#)
         .send()
         .map_err(|e| format!("Network error: {e}"))?;
 
@@ -383,7 +383,7 @@ fn run_test(cfg: &Config) -> bool {
     let shell_label = ShellKind::detect().label().to_string();
     let entry = telemetry::TelemetryEntry::new(
         "!feedback test — connectivity check",
-        &["echo yo-rust-test".to_string()],
+        &["echo mang.sh-test".to_string()],
         &cfg.model,
         &cfg.backend,
         &shell_label,
@@ -403,10 +403,10 @@ fn run_test(cfg: &Config) -> bool {
     if result.contains("successfully") {
         println!("{}", format!("  ✔  {result}").green().bold());
         println!("  {}  {}", "◈".cyan(), "Check your JSONBin dashboard — the entry should appear there now.".dimmed());
-        println!("  {}  {}", "◈".cyan(), "https://jsonbin.io → Collections → yo-rust-telemetry".dimmed());
+        println!("  {}  {}", "◈".cyan(), "https://jsonbin.io → Collections → mang.sh-telemetry".dimmed());
     } else {
         println!("{}", format!("  ✗  {result}").red());
-        println!("  {}  {}", "◈".cyan(), "Run with YODEBUG=1 for verbose output:  YODEBUG=1 yo".dimmed());
+        println!("  {}  {}", "◈".cyan(), "Run with MANGDEBUG=1 for verbose output:  MANGDEBUG=1 yo".dimmed());
         println!("  {}  {}", "◈".cyan(), "Is sharing enabled?  Type !feedback on to enable.".dimmed());
     }
     println!();
