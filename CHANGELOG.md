@@ -4,7 +4,76 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) · Versioning: 
 
 ---
 
-## [2.3.4] — 2026-03-22
+## [2.3.5] — 2026-03-23
+
+### ✨ New — Background update check on launch
+
+On every launch, yo-rust spawns a background thread that silently checks
+GitHub for a newer version by fetching `Cargo.toml` on the `main` branch.
+The thread runs concurrently with the banner display — startup latency is
+zero because the result is collected right before the first REPL prompt is
+shown, by which point the thread has had plenty of time to complete.
+
+If a newer version exists, a one-liner notice is shown:
+```
+  ◈  Update available: v2.3.6 — type !update to install
+```
+
+Rate-limited: the check is skipped if a check already ran within 24 hours.
+The timestamp is stored in `~/.config/yo-rust/last_update_check`.
+
+New shortcuts:
+- `!update` / `!upd` — check for updates and offer Y/N to install
+- `!check`           — same as !update
+
+On Y, yo-rust shells out to `update.sh` (Unix) or `update.ps1` (Windows)
+and exits so the user restarts with the new binary.
+
+New module: `src/updater.rs`
+
+### ✨ New — N on a suggestion opens a refinement tunnel
+
+Previously, pressing N on a suggestion showed "Skipped — rephrase your
+prompt and try again" and returned to the main prompt. The user had to
+re-type their entire request from scratch.
+
+Now, N opens an **iterative refinement loop**:
+
+```
+  yo ›  compress the logs folder
+
+  ◈  Creates a gzip archive of the logs directory.
+  ┌─────────────────────────────────┐
+  │  $  tar -czf logs.tar.gz logs/ │
+  └─────────────────────────────────┘
+
+  Run it? [Y/n] › N
+
+  ◈  Let's refine — what should be different?
+  ◈  (Describe the change, or press Enter / !skip to cancel)
+
+  yo ›  use zip instead of tar.gz
+
+  ◌  Thinking…
+
+  ◈  Creates a zip archive of the logs directory.
+  ┌──────────────────────────────────┐
+  │  $  zip -r logs.zip logs/       │
+  └──────────────────────────────────┘
+
+  Run it? [Y/n] › Y
+```
+
+The refinement prompt includes the original request AND the previous
+suggestion as context, so the AI understands exactly what to change.
+The user can keep pressing N and refining until the command is right.
+
+To truly cancel (skip without refining), press Enter with no input,
+type `!skip`, or press Ctrl-D.
+
+---
+
+## [2.3.5] — 2026-03-22
 
 ### 🐛 Fixed — Shell script colour variables broken on macOS / zsh
 
@@ -28,7 +97,7 @@ warning/error messages now render correctly in all terminals.
 
 ---
 
-## [2.3.4] — 2026-03-22
+## [2.3.5] — 2026-03-22
 
 ### 🔍 Code audit — zero clippy warnings, all logic paths verified
 

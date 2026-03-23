@@ -24,7 +24,7 @@ use colored::Colorize;
 /// Current version — single source of truth for the banner.
 /// Keep in sync with Cargo.toml `version` field.
 /// Future improvement: replace with env!("CARGO_PKG_VERSION") at compile time.
-const VERSION: &str = "v2.3.4";
+const VERSION: &str = "v2.3.5";
 
 // =============================================================================
 //  print_banner
@@ -278,6 +278,7 @@ pub fn print_help(cfg: &Config, dry_run: bool, history_enabled: bool, ctx_size: 
     println!("  {}", "SHORTCUTS".white().bold());
     let shortcuts: &[(&str, &str)] = &[
         ("!help  / !h",     "This help screen"),
+        ("!update / !check", "Check for a new version and offer to install it"),
         ("!api",            "Update backend, API key, model, history & context settings"),
         ("!feedback  / !fb",  "Feedback & data sharing — status, setup, on/off"),
         ("!fb setup",          "Run the full feedback setup wizard"),
