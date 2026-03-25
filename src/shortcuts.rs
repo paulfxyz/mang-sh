@@ -224,6 +224,7 @@ pub fn parse_shortcut_input(line: &str) -> ShortcutInput {
         "!help" | "!h" | "!api" | "!exit" | "!quit" | "!q"
         | "!context" | "!ctx" | "!clear"
         | "!prompt" | "!p"
+        | "!credits" | "!cr"
         => return ShortcutInput::NotAShortcut,
         _ => {}
     }

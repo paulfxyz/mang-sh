@@ -10,7 +10,7 @@
 [![Built with Rust](https://img.shields.io/badge/Built%20with-Rust-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
 [![Powered by OpenRouter](https://img.shields.io/badge/Powered%20by-OpenRouter-6c47ff?style=for-the-badge)](https://openrouter.ai)
 [![Ollama](https://img.shields.io/badge/Supports-Ollama-black?style=for-the-badge)](https://ollama.ai)
-[![Version](https://img.shields.io/badge/Version-3.0.2-brightgreen?style=for-the-badge)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-3.0.3-brightgreen?style=for-the-badge)](CHANGELOG.md)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-blue?style=for-the-badge)]()
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/paulfxyz/mang-sh/pulls)
 
@@ -43,7 +43,7 @@
   ║   ███████║██║  ██║                            ║
   ║   ╚══════╝╚═╝  ╚═╝                            ║
   ║                                               ║
-  ║   v3.0.2  ·  mang.sh  ·  github.com/paulfxyz  ║
+  ║   v3.0.3  ·  mang.sh  ·  github.com/paulfxyz  ║
   ╚═══════════════════════════════════════════════╝
 ```
 
@@ -142,6 +142,7 @@ The misconception: Rust is for operating systems, game engines, embedded firmwar
 | 🧠 Intent detection | "use ollama" / "change model" triggers reconfiguration without API call |
 | 📟 Rich shortcuts | `!help`, `!api`, `!feedback`, `!shortcuts`, `!context`, `!update`, `!exit` |
 | 🧭 Prompt wizard | `!prompt` / `!p` — guided 3-question mode when you're stuck or request is vague |
+| 🪪 Credits screen | `!credits` / `!cr` — author info, project links, build stack |
 | 🐚 Three aliases | `yo`, `hi`, `hello` — all invoke the spirit messenger |
 | 🌍 Context-aware | OS, arch, CWD, and precise shell sent with every request |
 | 🛡️ Safe prompting | Temperature 0.2 — deterministic, conservative suggestions |
@@ -308,6 +309,7 @@ Persisted to `~/.config/mang-sh/shortcuts.json` across sessions.
 | Input | What happens |
 |---|---|
 | `!prompt` / `!p` | Advanced Prompt Mode — up to 3 AI questions to clarify a vague request |
+| `!credits` / `!cr` | About mang.sh — author, links, build stack, mythology |
 | `!help` / `!h` | Full help screen |
 | `!update` / `!check` | Check for a new version, offer to install |
 | `!api` | Reconfigure backend, model, API key, history, context |
@@ -342,29 +344,33 @@ yo --version      # Show version
 ```
 mang-sh/
 ├── src/
-│   ├── main.rs        Entry point · REPL loop · execution · telemetry handles
-│   ├── ai.rs          OpenRouter + Ollama HTTP · JSON envelope · intent detection
-│   ├── config.rs      Load/save config · interactive setup wizard
-│   ├── shell.rs       Shell detection matrix · cross-platform dispatch
-│   ├── context.rs     Multi-turn conversation window (rolling N-turn buffer)
-│   ├── history.rs     Shell history appending (zsh/bash/fish native formats)
-│   ├── shortcuts.rs   Named command shortcuts (save, run, forget, persist)
-│   ├── updater.rs     Background version check · !update handler
-│   ├── telemetry.rs   JSONBin.io submission · thread handle management
-│   ├── feedback.rs    !feedback / !fb subcommand handler and UI wizards
-│   ├── cli.rs         clap argument parsing (--dry, --no-history, etc.)
-│   └── ui.rs          Banner · help · suggestion display · context summary
-├── Cargo.toml         Rust manifest · annotated dependencies
-├── yo.sh              Install (macOS/Linux/Git Bash)  →  curl https://mang.sh/install | bash
-├── update.sh          Update (macOS/Linux/Git Bash)   →  curl https://mang.sh/update | bash
-├── uninstall.sh       Uninstall (macOS/Linux)
-├── install.ps1        Install (Windows PowerShell 5+/7+)
-├── update.ps1         Update (Windows PowerShell)
-├── uninstall.ps1      Uninstall (Windows PowerShell)
-├── README.md          You're reading it
-├── INSTALL.md         Full install / update / uninstall reference
-├── CHANGELOG.md       Complete version history
-└── LICENSE            MIT
+│   ├── main.rs          Entry point, REPL loop, execution, telemetry handle tracking
+│   │                    All 4 exit paths join pending_telemetry before returning
+│   ├── ai.rs            OpenRouter + Ollama HTTP calls, JSON envelope, intent detection
+│   │                    suggest_commands() → Suggestion  |  suggest_raw() → String
+│   ├── prompt_wizard.rs Advanced Prompt Mode — 3-question Socratic dialogue
+│   │                    coach_prompt() → suggest_raw() → synthesise() → suggest_commands()
+│   ├── config.rs        Load/save ~/.config/mang-sh/config.json, interactive setup
+│   ├── shell.rs         ShellKind enum (8 variants), detection matrix, syntax hint
+│   ├── context.rs       ConversationContext — rolling window of N prior turns
+│   ├── history.rs       Shell history appending — zsh EXTENDED_HISTORY, bash, fish
+│   ├── shortcuts.rs     ShortcutStore — save/run/forget, persisted to shortcuts.json
+│   ├── updater.rs       Background version check (rate-limited 24h), !update handler
+│   ├── telemetry.rs     JSONBin.io background POST, JoinHandle tracking, MANGDEBUG
+│   ├── feedback.rs      !feedback subcommands — setup, on/off, personal, test, about
+│   ├── cli.rs           clap Args — --dry/-d, --no-history, --no-context
+│   └── ui.rs            Banner, help, credits, suggestion display, context summary
+├── Cargo.toml           Manifest — all deps annotated with purpose
+├── yo.sh                Unix installer — Rust auto-install, binary build, aliases
+├── update.sh            Unix updater — in-place binary replacement
+├── uninstall.sh         Unix uninstaller — binary + config + aliases, /dev/tty Y/N
+├── install.ps1          Windows PowerShell installer (PS5 + PS7 compatible)
+├── update.ps1           Windows updater
+├── uninstall.ps1        Windows uninstaller
+├── README.md            You're reading it
+├── INSTALL.md           Full install/update/uninstall reference
+├── CHANGELOG.md         Complete version history (all 13 versions)
+└── LICENSE              MIT
 ```
 
 ---
@@ -438,26 +444,38 @@ The most counterintuitive Windows bug: `$ErrorActionPreference = "Stop"` + `2>&1
 
 ## 🔬 Lessons learned — building mang.sh from scratch
 
+This section documents real technical decisions, dead ends, and the reasoning behind them. It's meant to be genuinely useful if you're building something similar — not a highlight reel.
+
+### On architecture: the REPL loop
+
+**A blocking single-threaded REPL is the right model for a CLI tool.**
+The entire mang.sh main loop is synchronous. There is exactly one network call per turn and it blocks. The alternative — async with tokio — would add ~200 KB to the binary, 30 seconds to the compile time, and zero user-visible benefit at this call frequency. One request per second doesn't need an async runtime. `async`/`await` is for servers handling hundreds of concurrent connections, not for CLI tools where the user is the bottleneck.
+
+**`rustyline` gives you readline for free — use it.**
+The REPL prompt needs arrow-key editing, `Ctrl-W` word delete, and in-session history (`↑`/`↓`). Rolling your own input handling is a week of work. `rustyline` is battle-tested, supports all of these, and integrates in five lines. The add_history_entry call keeps session history without touching the shell's history file (which is what `history.rs` is for — a separate, intentional concern).
+
+**The context window is a rolling buffer, not a log.**
+Multi-turn context (follow-up prompts like "now do the same for /tmp") works by injecting prior prompt/command pairs as `user`/`assistant` turns in the messages array. The window is bounded — oldest turns evicted first — to prevent unbounded token growth. Default is 5 turns. The key insight: the AI doesn't need the full session history, just the last few turns to resolve pronouns and relative references.
 
 ### On prompt engineering for tool-use UIs
 
+**State the output format twice. Really.**
+LLMs attenuate instructions that appeared many tokens ago. Stating the JSON schema once at the top and repeating it in a concrete example dramatically improves compliance, especially on smaller models (tested on Llama 3.2 7B and Mistral 7B where compliance dropped from ~90% to ~60% with single-statement format rules).
+
+**Structured output is load-bearing, not cosmetic.**
+The JSON envelope (`{ "commands": [...], "explanation": "..." }`) is the foundation everything else depends on. Without it, you have to parse freeform text — which means regex, which means edge cases, which means failures. Invest in the system prompt first. The entire suggestion pipeline, command display, execution, history recording, and telemetry all hang off clean parsing.
+
+**Temperature 0.2 is the sweet spot for command generation.**
+Full greedy decoding (`temperature=0`) produces too-literal outputs and gets stuck on ambiguous prompts. Temperature 0.5+ introduces hallucinated flags. 0.2 picks the most-probable conventional command form while handling natural language variation. Tested across GPT-4o-mini, Claude 3 Haiku, Llama 3.2, Mistral — 0.2 is consistently correct.
+
+**Platform context beats tool inventories.**
+`OS=macos SHELL=zsh syntax=posix` in every prompt is worth more than a paragraph listing available tools. The model infers `brew`, `open`, `pbcopy`, `arm64` paths from the OS. The `syntax=posix` / `syntax=powershell` / `syntax=cmd` field is the single highest-leverage addition — it tells the model exactly which shell syntax family to use, eliminating the most common cross-platform errors (PowerShell 5 doesn't support `&&`; cmd.exe uses `%VAR%` not `$VAR`).
+
 **When the tool can't understand you, the tool should ask — not just fail.**
-The original empty-suggestion path printed a message and returned to the blank
-prompt.  Users were left wondering: was the prompt too vague? Wrong phrasing?
-The AI broken?  Adding the wizard converted a dead end into a guided recovery.
+The original empty-suggestion path printed a message and returned to a blank prompt. Users were left stranded. The wizard (v3.0.2) converted a dead end into a guided recovery. The prompt coach uses `temperature=0.5` for natural-sounding questions. Synthesis is pure string concatenation (no extra AI call) — the downstream `suggest_commands()` handles disambiguation from rich compound context.
 
-**"Prompt coaching" is a different mode than "command generation".**
-The same AI backend can play two completely different roles depending on the
-system prompt.  Command generation uses `temperature=0.2`, strict JSON schema,
-and deterministic phrasing.  Prompt coaching uses `temperature=0.5`, plain
-prose, and a conversational tone.  Separating these into `suggest_commands()`
-vs `suggest_raw()` keeps both clean.
-
-**Synthesis beats summarisation.**  Rather than asking the AI to summarise
-collected Q&A context into a refined prompt (extra round-trip, non-deterministic),
-we simply concatenate the original prompt + user answers with `". "` and pass
-that compound sentence to `suggest_commands()`.  The downstream AI handles
-disambiguation naturally from rich context.
+**"Prompt coaching" and "command generation" are different modes.**
+Same backend, completely different system prompts. Command generation: `temperature=0.2`, strict JSON, deterministic. Coaching: `temperature=0.5`, plain prose, conversational. Separating them into `suggest_commands()` vs `suggest_raw()` keeps both contracts clean and makes each easy to reason about.
 
 ### On LLM prompt engineering
 
@@ -473,31 +491,92 @@ disambiguation naturally from rich context.
 
 ### On Rust for CLI tools
 
-**`cargo check` is your fastest feedback loop.** Type-checks the entire project in seconds without building. Use it constantly. `cargo build --release` only when you need the binary.
+**`cargo check` is your fastest feedback loop.**
+Type-checks the entire project in seconds without a full build. Use it after every change. `cargo build --release` only when you need the actual binary. The full release build takes 60–90 seconds on first run; `cargo check` takes under 2 seconds. That's the difference between a tight iteration loop and a frustrating one.
 
-**`#[serde(default)]` on every config field.** This is the key to forward-compatible config files. Every new field added to a config struct must have `#[serde(default)]` so existing configs load without error. Forgetting this breaks every existing user's installation on the next update.
+**`cargo clippy` catches what the type checker misses.**
+Clippy is not just style — it catches logic bugs. `is_some_and()` vs `map_or()`, `is_empty()` vs `len() == 0`, iterator chains that allocate unnecessarily. Running with `-D warnings` (deny all warnings as errors) enforces a clean codebase across every commit. mang.sh has maintained zero clippy warnings since v2.3.3.
 
-**`Box<dyn Error>` early, custom errors later.** For a project of this size, `Box<dyn std::error::Error>` as a return type lets you use `?` on any error type without defining a custom enum. The right starting point. Add custom error types when you need to match on variants.
+**`#[serde(default)]` on every config field — without exception.**
+This is the key to forward-compatible config files. Every new field added to `Config` must have `#[serde(default)]` so existing users' JSON configs load without error after an update. Forgetting this once breaks every existing installation on the next `!update`. The lesson: annotate new fields defensively at the point of addition, not retroactively when the bug surfaces in prod.
 
-**`Stdio::inherit()` for any program that runs other CLIs.** Capturing stdout breaks interactive programs (`vim`, `htop`), buffers streaming output (`cargo build`), and disables colour in colour-aware tools (`ls`, `grep`). Inherit stdio — always.
+**`Box<dyn Error>` early, custom error types later.**
+For a project of this size, `Box<dyn std::error::Error>` as a return type lets you use `?` on any error type — `reqwest`, `serde_json`, `std::io`, all work without defining a custom enum. The right starting point. Add typed errors only when you need to pattern-match on variants (e.g. network timeout vs auth failure). Don't prematurely optimise the error path.
 
-**Store `JoinHandle`s; never detach.** A dropped `JoinHandle` detaches the thread. When the process exits, detached threads are killed. For any background work that must complete (network requests, file writes), store the handle and join at every exit point.
+**`Stdio::inherit()` for any child process — always.**
+Capturing stdout/stderr from a child process breaks: interactive programs (`vim`, `htop`, `ssh`), streaming output (`cargo build`, `docker logs`), colour-aware tools (`ls --color`, `grep --color`), and any program that detects whether it's writing to a TTY. The correct approach: `Stdio::inherit()` for all three streams, let the child own the terminal directly.
+
+**Store `JoinHandle`s; never detach background threads.**
+A dropped `JoinHandle` silently detaches the thread. When `main()` returns, all detached threads are killed immediately — before any pending I/O completes. mang.sh v2.3.1 shipped with this bug: every telemetry entry was silently lost because the HTTP POST thread was killed on process exit. Fix: `Vec<JoinHandle<()>>` stored in `main()`, joined at every exit path (Ctrl-D, Ctrl-C, `!exit`, readline error — all four).
+
+**Blocking reqwest is the right call for a CLI tool.**
+`reqwest::blocking` is synchronous, has a clean API, handles redirects and TLS, and doesn't require `tokio`. For a tool that makes one HTTP request per user turn — where the user is already staring at a "Thinking…" spinner — async adds compile overhead and binary size for zero UX benefit. Reserve `async`/`await` for servers and high-concurrency situations.
+
+**The `dirs` crate for config paths — always use it.**
+Hard-coding `~/.config/` breaks on macOS (Application Support), Windows (AppData\Roaming), and any system with a non-standard `$XDG_CONFIG_HOME`. The `dirs` crate resolves the OS-correct path automatically and uses the Cargo package name (`mang-sh`) as the subdirectory. Changing the package name in `Cargo.toml` automatically moves the config directory — seamless rebrand.
+
+**`regex::Regex` should be compiled once, not per call.**
+The intent detection patterns in `ai.rs` compile a `Regex` from a string on every `intent_is_api_change()` call. For a REPL that runs this on every input, this is a small but unnecessary allocation. Production pattern: use `once_cell::sync::Lazy<Regex>` or `regex::RegexSet` compiled at startup. The current implementation is correct and cheap enough at this scale — but worth knowing for higher-frequency applications.
+
+### On cross-platform shell detection
+
+**Shell detection is harder than it looks.**
+`$SHELL` gives you `/bin/zsh` or `/usr/bin/bash` on Unix — helpful but not precise. On Windows it's empty. In a Git Bash session on Windows, `$SHELL` is `/usr/bin/bash` but you're actually inside Git Bash running on Win32. The correct approach: check multiple env vars (`$SHELL`, `$ZSH_VERSION`, `$BASH_VERSION`, `$FISH_VERSION`), check the parent process name on Windows, and maintain an explicit `ShellKind` enum covering zsh, bash, fish, sh, PowerShell 5, PowerShell 7, cmd.exe, Git Bash, and Unknown. The shell matrix (8 variants × 3 OS families) sounds complex but each variant is a simple string match.
+
+**The `syntax=` hint is the highest-leverage AI context field.**
+Telling the AI `syntax=powershell5` (not `syntax=powershell`) means it knows to avoid `&&` (unsupported in PS5) and use `;` or `-and` instead. `syntax=cmd` means `%VAR%` paths and `&` chaining instead of POSIX. Without this, the AI generates technically correct commands for the wrong shell — they look right but fail silently or with confusing errors.
 
 ### On Windows support
 
-**`curl` is not curl in PowerShell.** PowerShell has a built-in alias `curl → Invoke-WebRequest` that doesn't accept `-fsSL`. The correct idiom is `iwr -useb <url> | iex`. Document this prominently. Provide a native PowerShell installer.
+**`curl` is not curl in PowerShell.**
+PowerShell has a built-in alias `curl → Invoke-WebRequest` that silently ignores `-fsSL`. The Unix idiom `curl -fsSL https://... | bash` fails in PowerShell with no useful error message. The correct idiom: `iwr -useb <url> | iex`. Document this at every install instruction and provide a separate `.ps1` installer that doesn't use curl at all.
 
-**PowerShell 5 vs 7 is a real distinction.** PS5 (built into Windows) doesn't support `&&`. PS7 does. Detecting the version and adjusting the syntax hint in the AI context prevents a class of confusing errors for Windows users.
+**PowerShell 5 vs 7 is a real distinction.**
+PS5 (built into every Windows installation) doesn't support `&&` for command chaining. PS7 does. Detecting the version and emitting `syntax=powershell5` vs `syntax=powershell7` to the AI context prevents an entire class of confusing "command not found" errors for Windows users. They both look like "PowerShell" but behave differently.
 
-**`$ErrorActionPreference = "Stop"` + `2>&1` + native commands = disaster.** This triple combination kills scripts on `cargo`'s normal progress output. The fix is to drop all three: keep `$ErrorActionPreference = "Continue"`, don't redirect stderr, check `$LASTEXITCODE`.
+**`$ErrorActionPreference = "Stop"` + `2>&1` + native commands = script death.**
+This triple combination in an installer script kills `cargo build` — cargo writes all progress output to stderr, which PowerShell's Stop preference interprets as a terminating error even when the build succeeds. Fix: remove `$ErrorActionPreference = "Stop"`, remove `2>&1`, let cargo output flow freely, and check `$LASTEXITCODE` after. v2.2.0 fixed this after a bug report from a Windows user whose PS5.1 install script was killing on "Compiling foo v1.0.0".
 
 ### On telemetry and data pipelines
 
-**Fire-and-forget is wrong for anything that must complete.** The first version detached every telemetry thread. Every entry was silently lost because the process exited faster than the HTTP POST completed. Store handles, join at exit.
+**Fire-and-forget is wrong for anything that must complete.**
+The v2.3.0 implementation used `std::thread::spawn()` and immediately dropped the `JoinHandle`. The thread was detached. The process exited. The HTTP POST was killed at the OS level before any bytes left the machine. Every single telemetry entry was silently lost for an entire release. The fix is mechanical but critical: store every `JoinHandle` in a `Vec`, join all of them at every exit path. There are exactly four exit paths in mang.sh's main loop (Ctrl-D, Ctrl-C, readline error, `!exit`) — every one must join.
 
-**Silent error swallowing makes debugging impossible.** `Err(_) => {}` everywhere means you can't tell if entries are being sent and rejected, or never sent. Add a debug mode (`MANGDEBUG=1`) that prints payloads and responses to stderr.
+**Silent error swallowing makes debugging impossible.**
+`Err(_) => {}` is a legitimate production choice for non-critical background work. But during development it's a blackout. `MANGDEBUG=1 yo` enables a mode that prints the full JSON payload and HTTP response to stderr before submitting. This is how we diagnosed the dropped-thread bug — without it, the only symptom was "no data in the collection". Always add an escape hatch that makes the invisible visible.
 
-**Write-only API keys are the correct security model.** A key that can only create new bins cannot read, update, or delete anything — safe to ship in the binary. The worst-case abuse: someone adds junk entries. Noise, not a breach.
+**Write-only API keys are the correct security model for embedded credentials.**
+The telemetry write key is embedded in the mang.sh binary. It can only create new JSONBin bins (POST /b) — it cannot read, update, or delete anything. The worst-case scenario if the key leaks: someone adds junk entries to a collection that one person reads once a week. Compare to: a read key that exposes every user's command history. The security model maps directly to the threat model. A write-only key ships. A read key never ships.
+
+**Opt-in with periodic gentle reminders is better than opt-out.**
+Community telemetry is off by default in mang.sh. A counter in config triggers a reminder every 10 sessions. Users who want to contribute opt in with `!feedback on`. This approach: collects meaningful signal from genuinely interested users (not passive non-rejection), generates no resentment, and keeps the README's "never shared" claims credible. The alternative (opt-out) increases the data volume but degrades the signal quality and trust.
+
+
+### On installer design
+
+**`curl | bash` is controversial but practical.**
+Security-conscious developers object to piping untrusted scripts to a shell. The correct response: serve the script over HTTPS (TLS validates the server identity), pin the SHA-256 if paranoid, and always provide a manual install option (clone + `cargo build --release`). The `curl | bash` pattern is the dominant convention for developer tools precisely because it works on every Unix system with zero prerequisites — which matters enormously for a tool that installs Rust as part of its own installation.
+
+**`/dev/tty` is required for interactive prompts in piped scripts.**
+When a script runs via `curl | bash`, its stdin is the pipe (the script content), not the terminal. Any `read` call reads from the pipe, not from the user's keyboard — it returns EOF immediately and the script proceeds with an empty answer. This caused the v1.1.2 uninstall script to always report "Cancelled" regardless of what the user typed. Fix: `read -r reply </dev/tty` forces the read from the actual terminal. This is not widely documented and has caused bugs in many prominent open-source installers.
+
+**Shell colour codes must use ANSI-C quoting.**
+`CYN='[0;36m'` stores a literal backslash + 0 + 3 + 3 — not an escape byte. The terminal sees `[0;36m` as printable text and renders the raw escape sequence instead of colour. The correct form: `CYN=$'[0;36m'` (ANSI-C quoting) stores the actual ESC byte at assignment time. v2.3.4 fixed this after a bug report about the update script printing literal `` sequences instead of colours.
+
+**Idempotent installers are non-negotiable.**
+Running the installer twice must produce the same result as running it once. This means: detect existing binary and reinstall in place, detect existing aliases and skip writing them again, never corrupt the user's shell rc. The mang.sh installer checks for an existing `yo` binary at the start and uses its directory as the install target for reinstalls — preserving any non-standard install locations.
+
+### On AI-assisted development
+
+**AI pair programming is a force multiplier, not a replacement.**
+mang.sh was built entirely in collaboration with Perplexity Computer (Claude Sonnet + GPT-4o). The architecture decisions, design trade-offs, and final judgements are human. The implementation speed — 13 versions from v1.0.0 to v3.0.3 in a few days — would have taken weeks solo. The right mental model: AI handles the "how to write this in idiomatic Rust" while the human handles "what should this actually do and why".
+
+**AI-generated code must be compiled and tested, not trusted.**
+Every AI suggestion for this project went through `cargo check`, `cargo clippy`, and manual review before committing. Several suggestions had subtle bugs: dropped `JoinHandle`s (the telemetry issue), wrong PowerShell quoting, incorrect serde attribute placement. The AI is a skilled colleague who works fast and occasionally makes mistakes — treat it accordingly.
+
+**Document the "why" aggressively.**
+AI-generated code is often correct but context-free. Adding the comment blocks explaining *why* a design decision was made — not just what it does — is entirely the human's responsibility. Future maintainers (including future-you working with AI) need the reasoning, not just the implementation.
+
 
 ---
 
@@ -514,7 +593,7 @@ mang.sh can optionally share anonymised data to improve the AI system prompt. Re
 | Model | `"openai/gpt-4o-mini"` |
 | OS + shell | `"macos"` + `"zsh"` |
 | Worked | `true` |
-| Version | `"v3.0.2"` |
+| Version | `"v3.0.3"` |
 | Timestamp | `"2026-03-23T12:00:00Z"` |
 
 **Never shared:** API keys, file paths, CWD, command output, username, hostname.
@@ -542,6 +621,10 @@ Get a key: **[openrouter.ai/keys](https://openrouter.ai/keys)**
 ## 📝 Changelog
 
 > Full history: **[CHANGELOG.md](CHANGELOG.md)**
+
+### 🔖 v3.0.3 — 2026-03-25
+- 🪪 **Credits screen** (`!credits` / `!cr`) — author info, project links, build stack, mythology
+- 📚 README: deep technical expansion — REPL architecture, module reference, design rationale, toolchain notes
 
 ### 🔖 v3.0.2 — 2026-03-25
 - 🧭 **Advanced Prompt Mode** (`!prompt` / `!p`) — up to 3 AI-generated clarifying questions when you're stuck; auto-triggers when the AI returns no commands

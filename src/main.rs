@@ -320,6 +320,14 @@ fn main() {
                 println!("{}", "  ✔  Context cleared.".green());
                 continue;
             }
+            // ── Credits screen ────────────────────────────────────────────────
+            // Shows author info, project links, build stack, and the Gou Mang
+            // mythology.  No config needed — pure static display.
+            "!credits" | "!cr" => {
+                ui::print_credits();
+                continue;
+            }
+
             "!exit" | "!quit" | "!q" => {
                 println!("{}", "  Later. ✌".dimmed());
                 for h in pending_telemetry { let _ = h.join(); }

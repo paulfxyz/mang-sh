@@ -4,6 +4,58 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) · Versioning: 
 
 ---
 
+## [3.0.3] — 2026-03-25
+
+### Added
+
+#### `!credits` / `!cr` — About screen
+
+New shortcut that displays a formatted credits screen showing:
+
+- **AUTHOR** — Paul Fleury: name, role, location, website, email, GitHub,
+  LinkedIn, Twitter handle
+- **PROJECT** — mang.sh 句芒, version, license, website, source, install command
+- **BUILT WITH** — Rust, OpenRouter, Ollama, Perplexity Computer (AI pair programming)
+- **THE NAME** — Gōu Mḁng mythology and the bridge metaphor
+
+The screen is static (no config, no network) and uses the same box-drawing
+style as the help and context summary screens.
+
+The Perplexity Computer credit is intentional — this project was built in
+genuine collaboration with AI pair programming.  The architecture decisions
+are human; the implementation speed was only possible with AI assistance.
+Honesty about that is a feature, not a caveat.
+
+**Changes:**
+- `src/ui.rs`: `print_credits()` function added; VERSION bumped to `v3.0.3`
+- `src/main.rs`: `!credits` / `!cr` handled before shortcut dispatch
+- `src/shortcuts.rs`: `!credits` / `!cr` excluded from named-shortcut parsing
+
+#### README: deep technical expansion
+
+Significantly expanded documentation across:
+
+- **Architecture notes** — blocking REPL design rationale, rustyline usage,
+  context window as a rolling buffer (not a log)
+- **On Rust for CLI tools** — `cargo clippy -D warnings`, `#[serde(default)]`
+  forward-compat pattern, blocking reqwest vs async, `dirs` crate rationale,
+  `Regex` compile-once pattern
+- **On cross-platform shell detection** — `ShellKind` matrix (8 variants),
+  `syntax=` hint as highest-leverage context field
+- **On Windows support** — expanded with PS5/PS7 detection story, the
+  `$ErrorActionPreference + 2>&1 + native commands` triple-failure explanation
+- **On installer design** — `curl | bash` security context, `/dev/tty` for
+  piped script prompts (the root cause of the v1.1.2 uninstall bug), ANSI-C
+  quoting (`$'\033'` vs `'\033'`), idempotent installer design
+- **On AI-assisted development** — force multiplier framing, "compile and test,
+  don't trust", documenting the "why" is human work
+- **Module reference table** — all 14 source files with their exact
+  responsibility boundaries
+- **On telemetry** — fire-and-forget root cause analysis, `MANGDEBUG=1`
+  design rationale, write-only key security model, opt-in vs opt-out
+
+---
+
 ## [3.0.2] — 2026-03-25
 
 ### Added

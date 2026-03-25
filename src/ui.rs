@@ -27,7 +27,7 @@ use colored::Colorize;
 
 /// Current version — single source of truth for the banner.
 /// Synced with Cargo.toml `version` field.
-const VERSION: &str = "v3.0.2";
+const VERSION: &str = "v3.0.3";
 
 // =============================================================================
 //  print_banner
@@ -315,6 +315,7 @@ pub fn print_help(cfg: &Config, dry_run: bool, history_enabled: bool, ctx_size: 
     println!("  {}", "SHORTCUTS".white().bold());
     let shortcuts: &[(&str, &str)] = &[
         ("!prompt / !p",     "Advanced Prompt Mode — guided questions to clarify vague requests"),
+        ("!credits / !cr",   "About mang.sh — author, links, acknowledgements"),
         ("!help  / !h",      "This help screen"),
         ("!update / !check", "Check for a new version and offer to install it"),
         ("!api",             "Update backend, API key, model, history & context"),
@@ -381,6 +382,168 @@ pub fn print_help(cfg: &Config, dry_run: bool, history_enabled: bool, ctx_size: 
     println!();
 
     // Footer
+    println!(
+        "  {}  {}  {}  mang.sh  ·  github.com/paulfxyz/mang-sh",
+        "句芒".cyan(),
+        VERSION.dimmed(),
+        "·".dimmed()
+    );
+    println!();
+}
+
+// =============================================================================
+//  print_credits
+//
+//  Shows author info, project links, and acknowledgements.
+//  Triggered by !credits / !cr from the REPL.
+//
+//  Design notes:
+//  • All URLs are hard-coded strings — no config dependency, no network call.
+//  • Width matches the help / context summary boxes (56 chars inner).
+//  • The Perplexity Computer credit is intentional — this project was built
+//    entirely in collaboration with AI pair programming.  The code is real
+//    Rust, the architecture decisions are real, but the implementation speed
+//    was only possible with AI assistance.  Honesty about that is a feature.
+// =============================================================================
+pub fn print_credits() {
+    println!();
+    println!(
+        "{}",
+        "  ╔══════════════════════════════════════════════════════╗".cyan()
+    );
+    println!(
+        "{}",
+        "  ║   句芒  mang.sh  —  Credits & About                  ║".cyan().bold()
+    );
+    println!(
+        "{}",
+        "  ╚══════════════════════════════════════════════════════╝".cyan()
+    );
+    println!();
+
+    // ── Author ────────────────────────────────────────────────────────────
+    println!("  {}", "AUTHOR".white().bold());
+    println!(
+        "    {}  {}",
+        "Name:    ".dimmed(),
+        "Paul Fleury".white().bold()
+    );
+    println!(
+        "    {}  {}",
+        "Role:    ".dimmed(),
+        "Founder, entrepreneur, developer".white()
+    );
+    println!(
+        "    {}  {}",
+        "Base:    ".dimmed(),
+        "❤️  Lisbon, Portugal".white()
+    );
+    println!(
+        "    {}  {}",
+        "Web:     ".dimmed(),
+        "https://paulfleury.com".cyan()
+    );
+    println!(
+        "    {}  {}",
+        "Email:   ".dimmed(),
+        "hello@paulfleury.com".cyan()
+    );
+    println!(
+        "    {}  {}",
+        "GitHub:  ".dimmed(),
+        "github.com/paulfxyz".cyan()
+    );
+    println!(
+        "    {}  {}",
+        "LinkedIn:".dimmed(),
+        "linkedin.com/in/paulfxyz".cyan()
+    );
+    println!(
+        "    {}  {}",
+        "Twitter: ".dimmed(),
+        "@paulfxyz".cyan()
+    );
+    println!();
+
+    // ── Project ───────────────────────────────────────────────────────────
+    println!("  {}", "PROJECT".white().bold());
+    println!(
+        "    {}  {}",
+        "Name:    ".dimmed(),
+        "mang.sh 句芒  (formerly yo-rust)".white().bold()
+    );
+    println!(
+        "    {}  {}",
+        "Version: ".dimmed(),
+        VERSION.cyan().bold()
+    );
+    println!(
+        "    {}  {}",
+        "License: ".dimmed(),
+        "MIT".white()
+    );
+    println!(
+        "    {}  {}",
+        "Website: ".dimmed(),
+        "https://mang.sh".cyan()
+    );
+    println!(
+        "    {}  {}",
+        "Source:  ".dimmed(),
+        "github.com/paulfxyz/mang-sh".cyan()
+    );
+    println!(
+        "    {}  {}",
+        "Install: ".dimmed(),
+        "curl -fsSL https://mang.sh/install | bash".yellow()
+    );
+    println!();
+
+    // ── Built with ─────────────────────────────────────────────────────────
+    println!("  {}", "BUILT WITH".white().bold());
+    println!(
+        "    {}  {}",
+        "✓ ".green(),
+        "Rust — memory safety, zero runtime, native binary".white()
+    );
+    println!(
+        "    {}  {}",
+        "✓ ".green(),
+        "OpenRouter — access to GPT-4o, Claude, Llama and 100+ models".white()
+    );
+    println!(
+        "    {}  {}",
+        "✓ ".green(),
+        "Ollama — local private AI inference, zero network".white()
+    );
+    println!(
+        "    {}  {}",
+        "✓ ".green(),
+        "Perplexity Computer — AI pair programming throughout".white()
+    );
+    println!();
+
+    // ── Mythology ────────────────────────────────────────────────────────
+    println!("  {}", "THE NAME".white().bold());
+    println!(
+        "    {}",
+        "句芒 (Gōu Mḁng) is an ancient Chinese spirit deity — the divine".dimmed()
+    );
+    println!(
+        "    {}",
+        "messenger between the Emperor of Heaven and the mortal world.".dimmed()
+    );
+    println!(
+        "    {}",
+        "He carries intent across the boundary between realms.".dimmed()
+    );
+    println!(
+        "    {}",
+        "mang.sh does the same: human language → machine command.".dimmed()
+    );
+    println!();
+
+    // ── Footer ────────────────────────────────────────────────────────────
     println!(
         "  {}  {}  {}  mang.sh  ·  github.com/paulfxyz/mang-sh",
         "句芒".cyan(),
