@@ -93,7 +93,7 @@ The command to invoke him is `yo` — casual, direct, immediate. The way you'd a
 
 ## 👨‍💻 Why this exists
 
-I'm **Paul Fleury** — French internet entrepreneur based in Lisbon. I run [Openline](https://openline.ai) and manage infrastructure across multiple products: DNS, Docker stacks, reverse proxies, SSL certs, CI/CD pipelines, API integrations, cron jobs. The full sysadmin surface.
+I'm **Paul Fleury** — French internet entrepreneur based in Lisbon. I run [Openline](https://openline.com) and manage infrastructure across multiple products: DNS, Docker stacks, reverse proxies, SSL certs, CI/CD pipelines, API integrations, cron jobs. The full sysadmin surface.
 
 And I kept hitting the same wall — not the hard problems, but the *tedious* ones.
 
