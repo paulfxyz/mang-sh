@@ -938,6 +938,28 @@ Made with ❤️ by **Paul Fleury** — built in collaboration with **[Perplexit
 
 ---
 
+## ⚡ Disclaimer — 100% Vibe Coding
+
+I want to be upfront about something.
+
+I am not a software engineer. I'm not a coder in the traditional sense, and I make no claim to being one. I'm a former hacker turned entrepreneur — someone who spent a decade in intelligence, then pivoted to building things on the internet, and who has always been more comfortable with a terminal than a corporate job.
+
+This entire project — every line of Rust, every shell script, every installer, every i18n translation, every word of this README — was built through **vibe coding**: a continuous, conversational collaboration with AI tools, primarily **[Claude](https://claude.ai)** (via Perplexity Computer) and **[Perplexity](https://www.perplexity.ai)**. I described what I wanted. I pushed back when something was wrong. I had opinions about architecture, UX, naming, tone. The AI handled the implementation.
+
+The ideas are mine. The judgment calls are mine. The product instincts are mine. The code was written by AI under my direction.
+
+I think this is worth saying explicitly, for a few reasons:
+
+**Honesty.** Open-source projects are built on trust. You should know what you're looking at.
+
+**It's genuinely impressive what's possible.** mang.sh went from zero to 13 versions — including a full rebrand, multi-platform support, an AI wizard, a telemetry system, a website in 11 languages, and a properly documented codebase — in a matter of days. That timeline is only possible with AI assistance. Pretending otherwise would undersell what these tools can do.
+
+**The future is already here.** If you're a founder, a hacker, a product person who always had ideas but not enough engineering bandwidth — this is for you. You don't need to be a software engineer to build software anymore. You need taste, judgment, a clear head, and a good working relationship with AI.
+
+That's the only thing I'm actually claiming to have.
+
+---
+
 <div align="center">
 
 **句芒** *— the messenger between heaven and earth, between intent and command.*
